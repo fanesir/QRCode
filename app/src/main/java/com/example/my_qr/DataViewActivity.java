@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +39,9 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     ListView lv;
     NavigationView navigationView;
 
+
     Button put_cam;
+    EditText editTextgetname;
     CheckBox getall, inventory, no_inventory;
     HttpRequest.ItemState searchState;
     List<HttpRequest.ItemInfo> list_view_data = new LinkedList<>();//宣告空的陣列
@@ -49,21 +52,20 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         setContentView(R.layout.activity_data_view);
         lv = findViewById(R.id.lv);
         ItemAdapter adapter = new ItemAdapter(list_view_data);
-        lv.setAdapter(adapter);
-
+        editTextgetname = findViewById(R.id.editTextgetname);
         SwipeRefreshLayout pullToRefresh = findViewById(R.id.swiperefresh);
-
         navigationView = findViewById(R.id.nav_view);
+        put_cam = navigationView.getHeaderView(0).findViewById(R.id.push_cam);
 
-
-        put_cam = navigationView.getHeaderView(0).findViewById(R.id.push_cam);//get 裡面的button4
-        put_cam.setOnClickListener((View v) -> {
-            push_cam();
-        });
         getall = navigationView.getHeaderView(0).findViewById(R.id.fixing);
         inventory = navigationView.getHeaderView(0).findViewById(R.id.discard);
         no_inventory = navigationView.getHeaderView(0).findViewById(R.id.correct);
 
+        lv.setAdapter(adapter);
+        //get 裡面的button4
+        put_cam.setOnClickListener((View v) -> {
+            push_cam();
+        });
 
         getall.setOnCheckedChangeListener((compoundButton, b) -> {
             if (getall.isChecked()) {
@@ -73,6 +75,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             }
             clearAndReloadItems(20);
         });
+
         inventory.setOnCheckedChangeListener((compoundButton, b) -> {
             if (inventory.isChecked()) {
                 searchState = new HttpRequest.ItemState();
@@ -131,7 +134,9 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             }).start();
         });
 
+
         loadAndRefreshItems(20);//都先拿20個
+
 
     }
 
@@ -143,7 +148,33 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     Thread loadAndRefreshItems(int limit) {
         Thread thread = new Thread(() -> {
             try {
-                List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().GetItem(limit, list_view_data.size(), searchState, searchState);// 我要拿 0~20個
+                List<HttpRequest.ItemInfo> result = null;//裝各種物件資料
+                if (limit != 0) {
+                    result = HttpRequest.getInstance().GetItem(limit, list_view_data.size(), searchState);//
+                }
+
+                List<HttpRequest.ItemInfo> finalResult = result;
+                runOnUiThread(() -> {
+                    if (limit != 0) {
+                        list_view_data.addAll(finalResult);
+                    }
+                    synchronized (lv.getAdapter()) {
+                        ((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
+                    }
+                });
+            } catch (IOException | JSONException | HttpRequest.GetDataError e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+        return thread;
+    }
+
+    Thread searchloadAndRefreshItems(String name) {
+        Thread thread = new Thread(() -> {
+
+            try {
+                List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().searchItem(name);
 
                 runOnUiThread(() -> {
                     list_view_data.addAll(result);
@@ -176,7 +207,6 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             System.exit(0); // 離開程式
 
         }).show();
-
     }
 
     public void push_cam() {
@@ -190,59 +220,64 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         drawer.openDrawer(GravityCompat.START);//  drawer.openDrawer(GravityCompat.START);
 
     }
-}
 
-class ItemAdapter extends BaseAdapter {
-    private final List<HttpRequest.ItemInfo> list;
-    List<String> listt = new ArrayList<>();
+    public void search(View view) {
+        String Getname = editTextgetname.getText().toString();
+        searchloadAndRefreshItems(Getname);
+        clearAndReloadItems(0);//清掉
 
-    ItemAdapter(List<HttpRequest.ItemInfo> list) {
-        this.list = list;
     }
 
-    public void setData(List<String> list) {
-        listt = list;
-    }
+    class ItemAdapter extends BaseAdapter {
+        private final List<HttpRequest.ItemInfo> list;
+        List<String> listt = new ArrayList<>();
 
-    @Override
-    public int getCount() {
-        return this.list.size();
-    }
-
-    @Override
-    public Object getItem(int i) {
-
-        return this.list.get(i);
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        if (view == null) {
-            LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());//初始一個背後 layout畫板
-            view = inflater.inflate(R.layout.list_item, null);
+        ItemAdapter(List<HttpRequest.ItemInfo> list) {
+            this.list = list;
         }
-        HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) this.getItem(i);//?
 
-        TextView item_name = view.findViewById(R.id.item_name);
-        TextView item_status = view.findViewById(R.id.item_status);
-        TextView item_local = view.findViewById(R.id.localitem);
-
-        item_name.setText(info.name);
-        item_local.setText(info.location);
-        if (info.correct) {
-            item_status.setTextColor(Color.argb(255, 0, 255, 0));
-            item_status.setText("已盤點");
-        } else {
-            item_status.setTextColor(Color.argb(255, 255, 0, 0));
-            item_status.setText("未盤點");
+        public void setData(List<String> list) {
+            listt = list;
         }
-        return view;
+
+        @Override
+        public int getCount() {
+            return this.list.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+
+            return this.list.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            if (view == null) {
+                LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());//初始一個背後 layout畫板
+                view = inflater.inflate(R.layout.list_item, null);
+            }
+            HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) this.getItem(i);//?
+
+            TextView item_name = view.findViewById(R.id.item_name);
+            TextView item_status = view.findViewById(R.id.item_status);
+            TextView item_local = view.findViewById(R.id.localitem);
+
+            item_name.setText(info.name);
+            item_local.setText(info.location);
+            if (info.correct) {
+                item_status.setTextColor(Color.argb(255, 0, 255, 0));
+                item_status.setText("已盤點");
+            } else {
+                item_status.setTextColor(Color.argb(255, 255, 0, 0));
+                item_status.setText("未盤點");
+            }
+            return view;
+        }
     }
-
-
 }

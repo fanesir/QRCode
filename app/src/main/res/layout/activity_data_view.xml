@@ -18,14 +18,13 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swiperefresh"
             android:layout_width="0dp"
-            android:layout_height="500dp"
+            android:layout_height="543dp"
             android:layout_marginStart="3dp"
-            android:layout_marginTop="4dp"
             android:layout_marginEnd="3dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/editTextgetname">
 
             <ListView
                 android:id="@+id/lv"
@@ -40,26 +39,33 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="84dp"
-            android:layout_height="82dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="72dp"
+            android:id="@+id/imageButton"
+            android:layout_width="65dp"
+            android:layout_height="48dp"
             android:onClick="opendrawer"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="?android:attr/textSelectHandleRight" />
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
-            android:layout_width="0dp"
-            android:layout_height="59dp"
-            android:layout_marginTop="168dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/swiperefresh"
-            app:menu="@menu/menu" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="65dp"
+            android:layout_height="48dp"
+            android:text="🔎"
+            android:onClick="search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextgetname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="輸入產品名稱"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toStartOf="@+id/button3"
+            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

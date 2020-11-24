@@ -172,8 +172,8 @@ public class HttpRequest {
         return this.GetItem(limit, offset);//,null
     }
 
-    public List<ItemInfo> GetItem(int limit, int offset, ItemState state, ItemState location) throws IOException, JSONException, GetDataError {
-        Log.i("state&location", state + "----------" + "" + location);
+    public List<ItemInfo> GetItem(int limit, int offset, ItemState state) throws IOException, JSONException, GetDataError {
+
         String[][] query;
         if (state == null) {
             query = new String[][]{//Response 請求
@@ -184,10 +184,31 @@ public class HttpRequest {
             query = new String[][]{//Response 請求
                     {"limit", Integer.toString(limit)},
                     {"offset", Integer.toString((offset))},
-                    {"state", state.toJson().toString()},
-                    {"location", location.toJson().toString()}
+                    {"state", state.toJson().toString()}
             };
         }
+        Response response = this.Get("/api/item", query);
+        if (response.code() != 200) {
+            Log.d("HttpError", response.body().string());
+            throw new GetDataError();
+        }
+        JSONArray result = new JSONArray(response.body().string());
+        List<ItemInfo> array = new LinkedList<>();
+        for (int i = 0; i < result.length(); ++i) {
+            JSONObject data = (JSONObject) result.get(i);
+            array.add(new ItemInfo(data));
+        }
+        return array;
+    }
+
+
+    public List<ItemInfo> searchItem(String EDname) throws IOException, JSONException, GetDataError {
+
+        String[][] query;
+        query = new String[][]{//Response 請求
+                {"name", (EDname)}
+
+        };
         Response response = this.Get("/api/item", query);
         if (response.code() != 200) {
             Log.d("HttpError", response.body().string());
@@ -264,7 +285,6 @@ public class HttpRequest {
         ItemInfo(JSONObject object) throws JSONException {
             super(object);
             this.age_limit = this.defaultGet("age_limit", 0);//為了不讓它重新創建資料型別(Integer)
-//          this.age_limit = (Integer)this.defaultGet("age_limit", 0);
             this.cost = this.defaultGet("cost", 0);
             this.date = this.defaultGet("date", "");
             this.item_id = this.mustGet("item_id");
