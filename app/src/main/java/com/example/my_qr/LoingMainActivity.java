@@ -88,7 +88,7 @@ public class LoingMainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(this, R.string.successlogin, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.login_success, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, DataViewActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

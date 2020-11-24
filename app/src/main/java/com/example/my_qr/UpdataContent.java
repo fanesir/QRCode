@@ -19,10 +19,8 @@ public class UpdataContent extends AppCompatActivity {
     EditText updalocat, upid, upnote;
     HttpRequest.ItemInfo item_info;//型別 變數
     TextView Titlee;
-    int Backthedataview;
-    Button pushbutton, updatabutton2;
+    Button updatabutton2;
     CheckBox correct, discard, fixing, unlabel;
-    int getdataview;
 
 
     @Override
@@ -43,7 +41,6 @@ public class UpdataContent extends AppCompatActivity {
         Intent intent = UpdataContent.this.getIntent();
         item_info = (HttpRequest.ItemInfo) intent.getSerializableExtra("item_info");
         Intent intent2 = getIntent();
-        Backthedataview = intent2.getIntExtra("Backthedataview", 0);
 
         assert item_info != null;
         correct.setChecked(item_info.correct);
@@ -53,7 +50,7 @@ public class UpdataContent extends AppCompatActivity {
 
         updalocat.setText(item_info.location);
 
-        Titlee.setText("財產編號:" + "\n" + item_info.item_id);
+        Titlee.setText(String.format("%s\n%s", getString(R.string.item_id), item_info.item_id));
         upid.setText(item_info.name);
         upnote.setText(item_info.note);
     }
@@ -71,17 +68,6 @@ public class UpdataContent extends AppCompatActivity {
                 updatacheckbox();
 
                 runOnUiThread(() -> Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show());
-                if (Backthedataview == 123) {
-                    Intent intent = new Intent(this, DataViewActivity.class);
-                    finish();
-                    Backthedataview = 0;
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent(this, MainActivity.class);
-                    finish();
-                    Backthedataview = 0;
-                    startActivity(intent);
-                }
 
 
             } catch (IOException | JSONException e) {
@@ -93,9 +79,7 @@ public class UpdataContent extends AppCompatActivity {
     }
 
     public void updatacheckbox() {
-        //if (this.info == null) {//如果什麼都沒輸入
-        //    return;
-        //}
+
         new Thread(() -> {
             try {
                 runOnUiThread(() -> updatabutton2.setVisibility(View.VISIBLE));

@@ -2,21 +2,8 @@
     <string name="app_name">My_QR</string>
     <string name="login_failed">login failed, 帳密打錯了</string>
     <string name="sign_up_failed">sign up failed</string>
-    <string name="success">sign up success</string>
-    <string name="successlogin">login success</string>
+    <string name="sing_up_success">sign up success</string>
+    <string name="login_success">login success</string>
     <string name="item_result_template">掃描編號:\n%s\n資料庫編號:%s\n產品名稱:%s\n產品位置:%s</string>
-    <string name="title_activity_drawer2">drawer2</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="title_activity_slider_example">SliderExample</string>
-    <string name="title_activity_a_a_a_a_a">AAAAAA</string>
-    <string name="title_activity_slider">Slider</string>
+    <string name="item_id">財產編號:\n</string>
 </resources>
