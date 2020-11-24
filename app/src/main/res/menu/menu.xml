@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/pucam"
+            android:checked="true"
+            android:title="檢測相機" />
+
+        <item
+            android:id="@+id/cb_show_all"
+            android:title="全部"
+
+            app:actionViewClass="android.widget.CheckBox" />
+        <item
+            android:id="@+id/cb_correct"
+            android:title="已盤點"
+            app:actionViewClass="android.widget.CheckBox" />
+        <item
+            android:id="@+id/cb_no_correct"
+            android:title="未盤點"
+            app:actionViewClass="android.widget.CheckBox" />
+
+
+    </group>
+
+
+</menu><!--<CheckBox-->
+    <!--android:id="@+id/checkBox"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="CheckBox" />-->

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <CheckBox
+        android:id="@+id/correct"
+        android:layout_width="76dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="260dp"
+        android:text="符合" />
+
+    <CheckBox
+        android:id="@+id/discard"
+        android:layout_width="76dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="260dp"
+        android:text="報廢" />
+
+    <CheckBox
+        android:id="@+id/fixing"
+        android:layout_width="76dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="260dp"
+        android:text="送修" />
+
+    <CheckBox
+        android:id="@+id/unlabel"
+        android:layout_width="99dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="260dp"
+        android:text="標籤未貼"
+        android:textSize="13sp" />
+</LinearLayout>
