@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -13,28 +12,24 @@ import java.io.IOException;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ApplicationActivity extends AppCompatActivity {//申請
-    EditText username_app, userccount_app, password_app;
-    TextView textView2;
-
+public class ApplicationActivity extends AppCompatActivity {
+    EditText username_view, account_view, password_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_application);
 
-        username_app = findViewById(R.id.username_app);
-        userccount_app = findViewById(R.id.userccount_app);
-        password_app = findViewById(R.id.password_app);
-        textView2 = findViewById(R.id.textView2);
-
+        username_view = findViewById(R.id.username);
+        account_view = findViewById(R.id.userccount);
+        password_view = findViewById(R.id.password);
     }
 
 
-    public void applicatsuccess(View v) {
-        String username = username_app.getText().toString();
-        String account = userccount_app.getText().toString();
-        String password = password_app.getText().toString();
+    public void signIn(View v) {
+        String username = username_view.getText().toString();
+        String account = account_view.getText().toString();
+        String password = password_view.getText().toString();
 
         if (username.equals("") || account.equals("") || password.equals("")) {
             Toast.makeText(ApplicationActivity.this, "欄位不可空白", Toast.LENGTH_SHORT).show();
@@ -56,12 +51,8 @@ public class ApplicationActivity extends AppCompatActivity {//申請
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             } catch (HttpRequest.SignUpError e) {//SignUp 丟出來的錯誤訊息
-                runOnUiThread(() -> {
-                    Toast.makeText(this, R.string.sign_up_failed, Toast.LENGTH_SHORT).show();
-                });
+                runOnUiThread(() -> Toast.makeText(this, R.string.sign_up_failed, Toast.LENGTH_SHORT).show());
             }
         }).start();
     }
-
-
 }

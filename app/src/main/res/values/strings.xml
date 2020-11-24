@@ -6,4 +6,9 @@
     <string name="login_success">login success</string>
     <string name="item_result_template">掃描編號:\n%s\n資料庫編號:%s\n產品名稱:%s\n產品位置:%s</string>
     <string name="item_id">財產編號:\n</string>
+    <string name="application">申請</string>
+    <string name="application_interface">申請介面</string>
+    <string name="your_name">你的名稱</string>
+    <string name="account_required">輸入帳號</string>
+    <string name="password_required">輸入密碼</string>
 </resources>
