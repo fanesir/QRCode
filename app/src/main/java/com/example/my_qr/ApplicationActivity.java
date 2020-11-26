@@ -51,7 +51,7 @@ public class ApplicationActivity extends AppCompatActivity {
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             } catch (HttpRequest.SignUpError e) {//SignUp 丟出來的錯誤訊息
-                runOnUiThread(() -> Toast.makeText(this, R.string.sign_up_failed, Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, R.string.sign_up_failed, Toast.LENGTH_SHORT).show());//測試
             }
         }).start();
     }
