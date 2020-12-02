@@ -18,9 +18,10 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swiperefresh"
             android:layout_width="0dp"
-            android:layout_height="543dp"
+            android:layout_height="0dp"
             android:layout_marginStart="3dp"
             android:layout_marginEnd="3dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +30,7 @@
             <ListView
                 android:id="@+id/lv"
                 android:layout_width="match_parent"
-                android:layout_height="516dp"
+                android:layout_height="match_parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.395"
@@ -78,7 +79,6 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/slider_layout">
 
-        <!--        app:menu="@menu/menu" -->
 
     </com.google.android.material.navigation.NavigationView>
 
