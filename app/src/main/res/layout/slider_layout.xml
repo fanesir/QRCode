@@ -12,6 +12,7 @@
         android:id="@+id/push_cam"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
         android:text="檢測相機"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,13 +44,21 @@
         app:layout_constraintTop_toBottomOf="@+id/discard" />
 
     <Button
-        android:id="@+id/submit"
+        android:id="@+id/updatabrrower"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="搜尋"
+        android:text="新增借出人"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/correct" />
+
+    <Button
+        android:id="@+id/showbrrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查詢借出人"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/updatabrrower" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

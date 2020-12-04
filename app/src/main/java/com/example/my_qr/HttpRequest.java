@@ -168,9 +168,6 @@ public class HttpRequest {
         return new ItemInfo(new JSONObject(response.body().string()));
     }
 
-    public List<ItemInfo> GetItem(int limit, int offset) throws IOException, JSONException, GetDataError {
-        return this.GetItem(limit, offset);//,null
-    }
 
     public List<ItemInfo> GetItem(int limit, int offset, ItemState state) throws IOException, JSONException, GetDataError {
 
@@ -196,6 +193,7 @@ public class HttpRequest {
         List<ItemInfo> array = new LinkedList<>();
         for (int i = 0; i < result.length(); ++i) {
             JSONObject data = (JSONObject) result.get(i);
+
             array.add(new ItemInfo(data));
         }
         return array;
@@ -219,6 +217,46 @@ public class HttpRequest {
         for (int i = 0; i < result.length(); ++i) {
             JSONObject data = (JSONObject) result.get(i);
             array.add(new ItemInfo(data));
+        }
+        return array;
+    }
+
+    //出借
+    public void BrrowSignUp(String brrname, String brrnumber) throws JSONException, IOException, SignUpError {
+        JSONObject object = new JSONObject();
+        object.put("name", brrname);
+        object.put("phone", brrnumber);
+
+        RequestBody body = this.MakeJson(object);
+        Response response = this.Post("/api/borrower", body);
+        if (response.code() != 200) {
+            Log.d("HttpError", response.body().string());
+            throw new SignUpError();
+        }
+    }
+
+    public List<BrItemInfo> BrGetItem(int limit, int offset) throws IOException, JSONException, GetDataError {
+
+        String[][] query;
+
+        query = new String[][]{//Response 請求
+                {"limit", Integer.toString(limit)},
+                {"offset", Integer.toString((offset))}
+
+        };
+
+        Response response = this.Get("/api/borrower", query);
+        if (response.code() != 200) {
+            Log.i("HttpError", response.body().string());
+            throw new GetDataError();
+        }
+        JSONArray resultt = new JSONArray(response.body().string());
+        List<BrItemInfo> array = new LinkedList<>();
+        for (int i = 0; i < resultt.length(); ++i) {
+
+            JSONObject data = (JSONObject) resultt.get(i);
+
+            array.add(new BrItemInfo(data));
         }
         return array;
     }
@@ -277,10 +315,14 @@ public class HttpRequest {
         protected String location;
         protected String name;
         protected String note;
+
         protected boolean correct;
         protected boolean discard;
         protected boolean fixing;
         protected boolean unlabel;
+
+        protected String brname;
+        protected String brnumber;
 
         ItemInfo(JSONObject object) throws JSONException {
             super(object);
@@ -291,12 +333,30 @@ public class HttpRequest {
             this.location = this.mustGet("location");
             this.name = this.mustGet("name");
             this.note = this.mustGet("note");
+            this.brname = this.mustGet("name");
+            // this.brnumber = this.mustGet("phone");
 
             JSONObject state = this.mustGet("state");
             this.correct = state.getBoolean("correct");
             this.discard = state.getBoolean("discard");
             this.fixing = state.getBoolean("fixing");
             this.unlabel = state.getBoolean("unlabel");
+        }
+    }
+
+    static class BrItemInfo extends JsonData implements Serializable {
+
+
+        protected String brname;
+        protected String brnumber;
+
+        BrItemInfo(JSONObject object) throws JSONException {
+            super(object);
+
+            this.brname = this.mustGet("name");
+            this.brnumber = this.mustGet("phone");
+
+
         }
     }
 }

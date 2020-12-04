@@ -40,11 +40,11 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     NavigationView navigationView;
 
 
-    Button put_cam;
+    Button put_cam, new_brrow, showbrrow;
     EditText editTextgetname;
     CheckBox getall, inventory, no_inventory;
     HttpRequest.ItemState searchState;
-    List<HttpRequest.ItemInfo> list_view_data = new LinkedList<>();//宣告空的陣列
+    public static List<HttpRequest.ItemInfo> list_view_data = new LinkedList<>();//宣告空的陣列
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +55,9 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         editTextgetname = findViewById(R.id.editTextgetname);
         SwipeRefreshLayout pullToRefresh = findViewById(R.id.swiperefresh);
         navigationView = findViewById(R.id.nav_view);
+        new_brrow = navigationView.getHeaderView(0).findViewById(R.id.updatabrrower);
+        showbrrow = navigationView.getHeaderView(0).findViewById(R.id.showbrrow);
         put_cam = navigationView.getHeaderView(0).findViewById(R.id.push_cam);
-
         getall = navigationView.getHeaderView(0).findViewById(R.id.fixing);
         inventory = navigationView.getHeaderView(0).findViewById(R.id.discard);
         no_inventory = navigationView.getHeaderView(0).findViewById(R.id.correct);
@@ -88,7 +89,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         no_inventory.setOnCheckedChangeListener((compoundButton, b) -> {
             if (no_inventory.isChecked()) {
-                Log.i("123", "654");
+
                 searchState = new HttpRequest.ItemState();
                 searchState.correct = false;
                 getall.setChecked(false);
@@ -96,7 +97,15 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             }
             clearAndReloadItems(20);
         });
-
+        new_brrow.setOnClickListener(view -> {
+            Intent intent = new Intent(DataViewActivity.this, NewBrrowActivity.class);
+            startActivity(intent);
+        });
+        showbrrow.setOnClickListener(view -> {
+            Intent intentt = new Intent(DataViewActivity.this, ShowBrrowActivity.class);
+            intentt.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intentt);
+        });
 
         //AdapterView 是一個類別 裡面的 intface OnItemClickListener void() 介面
         lv.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -215,6 +224,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         startActivity(intent);
     }
 
+
     public void opendrawer(View view) {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.openDrawer(GravityCompat.START);//  drawer.openDrawer(GravityCompat.START);
@@ -247,12 +257,13 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         @Override
         public Object getItem(int i) {
-
+            Log.i("hello", "" + i);
             return this.list.get(i);
         }
 
         @Override
         public long getItemId(int i) {
+
             return i;
         }
 
@@ -267,6 +278,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             TextView item_name = view.findViewById(R.id.item_name);
             TextView item_status = view.findViewById(R.id.item_status);
             TextView item_local = view.findViewById(R.id.localitem);
+
 
             item_name.setText(info.name);
             item_local.setText(info.location);
