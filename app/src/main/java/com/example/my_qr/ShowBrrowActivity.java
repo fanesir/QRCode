@@ -16,9 +16,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class ShowBrrowActivity extends AppCompatActivity {
     String[] alan = {"1", "2"};
+
     ListView showbrrowlisstview;
     List<HttpRequest.BrItemInfo> list_view_data = new LinkedList<>();
 
@@ -28,14 +30,28 @@ public class ShowBrrowActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_brrow);
         showbrrowlisstview = findViewById(R.id.showbrrowlisst);
-
+        SwipeRefreshLayout brswipLayout = findViewById(R.id.brswipLayout);
         BrrowItemAdpter adpter = new BrrowItemAdpter(list_view_data);
 
 
         showbrrowlisstview.setAdapter(adpter);
 
         loadBrData(20);
+
+        brswipLayout.setOnRefreshListener(() -> {
+            Thread thread = loadBrData(5);
+            new Thread(() -> {
+                try {
+                    thread.join();//從中介入
+                } catch (InterruptedException ignored) {
+                } finally {
+                    runOnUiThread(() -> brswipLayout.setRefreshing(false));
+                }
+            }).start();
+        });
+
     }
+
 
     Thread loadBrData(int limit) {
         Thread thread = new Thread(() -> {
