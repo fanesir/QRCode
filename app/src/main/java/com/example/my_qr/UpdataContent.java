@@ -2,6 +2,7 @@ package com.example.my_qr;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -40,7 +41,7 @@ public class UpdataContent extends AppCompatActivity {
         unlabel = findViewById(R.id.unlabell);
         Intent intent = UpdataContent.this.getIntent();
         item_info = (HttpRequest.ItemInfo) intent.getSerializableExtra("item_info");
-        Intent intent2 = getIntent();
+
 
         assert item_info != null;
         correct.setChecked(item_info.correct);
@@ -53,6 +54,8 @@ public class UpdataContent extends AppCompatActivity {
         Titlee.setText(String.format("%s\n%s", getString(R.string.item_id), item_info.item_id));
         upid.setText(item_info.name);
         upnote.setText(item_info.note);
+        Log.i("我的id", item_info.item_id);
+
     }
 
 

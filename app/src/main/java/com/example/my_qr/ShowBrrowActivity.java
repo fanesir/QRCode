@@ -1,5 +1,6 @@
 package com.example.my_qr;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -19,7 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class ShowBrrowActivity extends AppCompatActivity {
-    String[] alan = {"1", "2"};
+
 
     ListView showbrrowlisstview;
     List<HttpRequest.BrItemInfo> list_view_data = new LinkedList<>();
@@ -50,8 +51,20 @@ public class ShowBrrowActivity extends AppCompatActivity {
             }).start();
         });
 
-    }
+        showbrrowlisstview.setOnItemClickListener((adapterView, view, i, l) -> {
 
+            BrrowItemAdpter brrowItemAdpter = (BrrowItemAdpter) adapterView.getAdapter();//getAdapter 方法
+            HttpRequest.BrItemInfo getBrItemInfo = (HttpRequest.BrItemInfo) brrowItemAdpter.getItem(i);
+            getBrItemInfo.id = i + 1;
+
+            Intent intent = new Intent(ShowBrrowActivity.this, UpdataBrrowContent.class);
+            intent.putExtra("Brrow", getBrItemInfo);
+
+            startActivity(intent);
+        });
+
+
+    }
 
     Thread loadBrData(int limit) {
         Thread thread = new Thread(() -> {

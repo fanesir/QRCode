@@ -12,7 +12,8 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".ShowBrrowActivity"></activity>
+        <activity android:name=".UpdataBrrowContent"></activity>
+        <activity android:name=".ShowBrrowActivity" />
         <activity android:name=".NewBrrowActivity" />
         <activity android:name=".UpdataContent" />
         <activity android:name=".DataViewActivity" />
@@ -27,8 +28,8 @@
         </activity>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class NewBrrowActivity extends AppCompatActivity {
     EditText brrowname, brrownumber;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,11 +44,12 @@ public class NewBrrowActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (HttpRequest.SignUpError signUpError) {
                 signUpError.printStackTrace();
-                Toast.makeText(NewBrrowActivity.this, "faile", Toast.LENGTH_LONG).show();
+
+                runOnUiThread(() -> {
+                    Toast.makeText(NewBrrowActivity.this, "fail", Toast.LENGTH_LONG).show();
+                });
             }
         }).start();
-
-
     }
 }
 

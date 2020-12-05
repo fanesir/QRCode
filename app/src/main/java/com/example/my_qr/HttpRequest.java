@@ -261,6 +261,20 @@ public class HttpRequest {
         return array;
     }
 
+    public void UpdataBrItem(String brname, String brphone, int brItem) throws IOException, JSONException, UpdateDataError {
+        JSONObject body = new JSONObject();
+        body.put("id", brItem);
+        body.put("name", brname);
+        body.put("phone", brphone);
+
+        Response response = this.Put("/api/borrower", this.MakeJson(body));
+        if (response.code() != 200) {
+            Log.d("HttpError", response.body().string());
+            throw new UpdateDataError();
+        }
+
+    }
+
 
     static class ItemState {
         public String location;
@@ -346,13 +360,14 @@ public class HttpRequest {
 
     static class BrItemInfo extends JsonData implements Serializable {
 
-
+        protected int id;
         protected String brname;
         protected String brnumber;
 
         BrItemInfo(JSONObject object) throws JSONException {
             super(object);
 
+            this.id = this.mustGet("id");
             this.brname = this.mustGet("name");
             this.brnumber = this.mustGet("phone");
 

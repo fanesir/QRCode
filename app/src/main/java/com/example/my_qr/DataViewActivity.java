@@ -3,7 +3,6 @@ package com.example.my_qr;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -99,12 +98,13 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         });
         new_brrow.setOnClickListener(view -> {
             Intent intent = new Intent(DataViewActivity.this, NewBrrowActivity.class);
+
             startActivity(intent);
         });
         showbrrow.setOnClickListener(view -> {
-            Intent intentt = new Intent(DataViewActivity.this, ShowBrrowActivity.class);
-            intentt.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intentt);
+            Intent intent = new Intent(DataViewActivity.this, ShowBrrowActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
 
         //AdapterView 是一個類別 裡面的 intface OnItemClickListener void() 介面
@@ -257,7 +257,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         @Override
         public Object getItem(int i) {
-            Log.i("hello", "" + i);
+
             return this.list.get(i);
         }
 
