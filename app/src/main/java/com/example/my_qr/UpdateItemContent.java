@@ -16,11 +16,10 @@ import java.io.IOException;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class UpdataContent extends AppCompatActivity {
-    EditText updalocat, upid, upnote;
+public class UpdateItemContent extends AppCompatActivity {
+    EditText location, id, note;
     HttpRequest.ItemInfo item_info;//型別 變數
-    TextView Titlee;
-    Button updatabutton2;
+    Button submitButton;
     CheckBox correct, discard, fixing, unlabel;
 
 
@@ -29,50 +28,41 @@ public class UpdataContent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_updata_content);
-        updalocat = findViewById(R.id.updalocat);//我要get
-        upid = findViewById(R.id.upid);
-        upnote = findViewById(R.id.upnote);
-        Titlee = findViewById(R.id.Titlee);
-        updatabutton2 = findViewById(R.id.pushbutton2);
+        location = findViewById(R.id.location);
+        id = findViewById(R.id.id);
+        note = findViewById(R.id.note);
+        TextView Title = findViewById(R.id.title);
+        submitButton = findViewById(R.id.pushbutton2);
 
-        correct = findViewById(R.id.correctt);
-        discard = findViewById(R.id.discardd);
-        fixing = findViewById(R.id.fixingg);
-        unlabel = findViewById(R.id.unlabell);
-        Intent intent = UpdataContent.this.getIntent();
+        correct = findViewById(R.id.correct);
+        discard = findViewById(R.id.discard);
+        fixing = findViewById(R.id.fixing);
+        unlabel = findViewById(R.id.unlabel);
+        Intent intent = UpdateItemContent.this.getIntent();
         item_info = (HttpRequest.ItemInfo) intent.getSerializableExtra("item_info");
-
 
         assert item_info != null;
         correct.setChecked(item_info.correct);
         discard.setChecked(item_info.discard);
         fixing.setChecked(item_info.fixing);
         unlabel.setChecked(item_info.unlabel);
+        location.setText(item_info.location);
 
-        updalocat.setText(item_info.location);
-
-        Titlee.setText(String.format("%s\n%s", getString(R.string.item_id), item_info.item_id));
-        upid.setText(item_info.name);
-        upnote.setText(item_info.note);
+        Title.setText(String.format("%s\n%s", getString(R.string.item_id), item_info.item_id));
+        id.setText(item_info.name);
+        note.setText(item_info.note);
         Log.i("我的id", item_info.item_id);
-
     }
 
-
-    public void putupdata(View v) {
-
-        String dalocat_up = updalocat.getText().toString();
-        String noteup = upnote.getText().toString();
-
+    public void submitData(View v) {
+        String location = this.location.getText().toString();
+        String note = this.note.getText().toString();
 
         new Thread(() -> {
             try {
-                HttpRequest.getInstance().UpdateItem(item_info.item_id, dalocat_up, noteup, null);
-                updatacheckbox();
-
+                HttpRequest.getInstance().UpdateItem(item_info.item_id, location, note, null);
+                updateItemState();
                 runOnUiThread(() -> Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show());
-
-
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             } catch (HttpRequest.UpdateDataError e) {
@@ -81,11 +71,10 @@ public class UpdataContent extends AppCompatActivity {
         }).start();
     }
 
-    public void updatacheckbox() {
-
+    public void updateItemState() {
         new Thread(() -> {
             try {
-                runOnUiThread(() -> updatabutton2.setVisibility(View.VISIBLE));
+                runOnUiThread(() -> submitButton.setVisibility(View.VISIBLE));
                 HttpRequest.ItemState state = new HttpRequest.ItemState();//會確認說哪邊有按到哪邊沒有
                 state.correct = correct.isChecked();//檢查哪邊有按到
                 state.fixing = fixing.isChecked();
@@ -96,7 +85,7 @@ public class UpdataContent extends AppCompatActivity {
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             } catch (HttpRequest.UpdateDataError e) {
-                runOnUiThread(() -> Toast.makeText(UpdataContent.this, "更新失敗", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(UpdateItemContent.this, "更新失敗", Toast.LENGTH_SHORT).show());
             }
         }).start();
     }

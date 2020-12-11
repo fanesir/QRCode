@@ -2,7 +2,6 @@ package com.example.my_qr;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,48 +18,38 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-public class ShowBrrowActivity extends AppCompatActivity {
-
-
-    ListView showbrrowlisstview;
-    List<HttpRequest.BrItemInfo> list_view_data = new LinkedList<>();
+public class ShowThisAccountBorrowerDataActivity extends AppCompatActivity {
+    HttpRequest.BorrowerInfo borrowerInfo;
+    List<HttpRequest.BorrowerInfo> lis = new LinkedList<>();
+    ListView accountListView;
+    SwipeRefreshLayout swipeRefreshLayout;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_brrow);
-        showbrrowlisstview = findViewById(R.id.showbrrowlisst);
-        SwipeRefreshLayout brswipLayout = findViewById(R.id.brswipLayout);
-        BrrowItemAdpter adpter = new BrrowItemAdpter(list_view_data);
+        setContentView(R.layout.activity_show_borrow_account_data);
+        accountListView = findViewById(R.id.lvshowaccout);
+        swipeRefreshLayout = findViewById(R.id.swipshowbrrow);
 
+        Intent intent = ShowThisAccountBorrowerDataActivity.this.getIntent();
+        borrowerInfo = (HttpRequest.BorrowerInfo) intent.getSerializableExtra("account_item_info");
+        showThisAccountItemAdapter showThisAccountItemAdapter = new showThisAccountItemAdapter(lis);
+        accountListView.setAdapter(showThisAccountItemAdapter);
 
-        showbrrowlisstview.setAdapter(adpter);
 
         loadBrData(20);
 
-        brswipLayout.setOnRefreshListener(() -> {
+        swipeRefreshLayout.setOnRefreshListener(() -> {
             Thread thread = loadBrData(5);
             new Thread(() -> {
                 try {
                     thread.join();//從中介入
                 } catch (InterruptedException ignored) {
                 } finally {
-                    runOnUiThread(() -> brswipLayout.setRefreshing(false));
+                    runOnUiThread(() -> swipeRefreshLayout.setRefreshing(false));
                 }
             }).start();
-        });
-
-        showbrrowlisstview.setOnItemClickListener((adapterView, view, i, l) -> {
-
-            BrrowItemAdpter brrowItemAdpter = (BrrowItemAdpter) adapterView.getAdapter();//getAdapter 方法
-            HttpRequest.BrItemInfo getBrItemInfo = (HttpRequest.BrItemInfo) brrowItemAdpter.getItem(i);
-            getBrItemInfo.id = i + 1;
-
-            Intent intent = new Intent(ShowBrrowActivity.this, UpdataBrrowContent.class);
-            intent.putExtra("Brrow", getBrItemInfo);
-
-            startActivity(intent);
         });
 
 
@@ -69,21 +58,21 @@ public class ShowBrrowActivity extends AppCompatActivity {
     Thread loadBrData(int limit) {
         Thread thread = new Thread(() -> {
             try {
-                List<HttpRequest.BrItemInfo> result = null;//裝各種物件資料
+                List<HttpRequest.BorrowerInfo> result = null;//裝各種物件資料
                 if (limit != 0) {
                     HttpRequest.ItemState searchState = new HttpRequest.ItemState();
-                    searchState.correct = false;
-                    result = HttpRequest.getInstance().BrGetItem(limit, list_view_data.size());//
+                    int id = borrowerInfo.id;
+                    String name = borrowerInfo.name;
+                    result = HttpRequest.getInstance().GetBorrowerRecord(id, name, limit, lis.size());//
                 }
 
-
-                List<HttpRequest.BrItemInfo> finalResult = result;
+                List<HttpRequest.BorrowerInfo> finalResult = result;
                 runOnUiThread(() -> {
                     if (limit != 0) {
-                        list_view_data.addAll(finalResult);
+                        lis.addAll(finalResult);
                     }
-                    synchronized (showbrrowlisstview.getAdapter()) {
-                        ((BaseAdapter) showbrrowlisstview.getAdapter()).notifyDataSetChanged();
+                    synchronized (accountListView.getAdapter()) {
+                        ((BaseAdapter) accountListView.getAdapter()).notifyDataSetChanged();
                     }
                 });
             } catch (IOException | JSONException | HttpRequest.GetDataError e) {
@@ -95,24 +84,21 @@ public class ShowBrrowActivity extends AppCompatActivity {
     }
 
 
-    class BrrowItemAdpter extends BaseAdapter {
+    class showThisAccountItemAdapter extends BaseAdapter {
+        List<HttpRequest.BorrowerInfo> list;
 
-        private final List<HttpRequest.BrItemInfo> list;
-
-        public BrrowItemAdpter(List<HttpRequest.BrItemInfo> lList) {
-            this.list = lList;
+        showThisAccountItemAdapter(List<HttpRequest.BorrowerInfo> list) {
+            this.list = list;
         }
 
         @Override
         public int getCount() {
-
-            return this.list.size();
+            return list.size();
         }
 
         @Override
         public Object getItem(int i) {
-
-            return this.list.get(i);
+            return list.get(i);
         }
 
         @Override
@@ -126,20 +112,21 @@ public class ShowBrrowActivity extends AppCompatActivity {
                 LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
                 view = layoutInflater.inflate(R.layout.list_item, null);
             }
-            HttpRequest.BrItemInfo info = (HttpRequest.BrItemInfo) this.getItem(i);
-
+            HttpRequest.BorrowerInfo info = (HttpRequest.BorrowerInfo) this.getItem(i);
             TextView item_name = view.findViewById(R.id.item_name);
             TextView item_status = view.findViewById(R.id.item_status);
             TextView item_local = view.findViewById(R.id.localitem);
 
-            item_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            item_status.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            item_name.setText(info.brname);
             item_local.setText("");
-            item_status.setText(info.brnumber);
-
+            item_name.setText("項目名稱");
+            item_status.setText("借出日期");
             return view;
         }
+    }
+
+    public void toAddThisAccountWantBorrowerItem(View view) {
+        Intent intent = new Intent(ShowThisAccountBorrowerDataActivity.this, AddThisAccountWantBorrowerctivity.class);
+        startActivity(intent);
     }
 
 

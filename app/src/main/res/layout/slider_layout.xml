@@ -9,7 +9,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/push_cam"
+        android:id="@+id/start_camera_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
@@ -23,7 +23,7 @@
         android:layout_height="41dp"
         android:text="全部"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/push_cam" />
+        app:layout_constraintTop_toBottomOf="@+id/start_camera_activity" />
 
 
     <CheckBox
@@ -44,7 +44,7 @@
         app:layout_constraintTop_toBottomOf="@+id/discard" />
 
     <Button
-        android:id="@+id/updatabrrower"
+        android:id="@+id/create_borrower"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -58,7 +58,7 @@
         android:layout_height="wrap_content"
         android:text="查詢借出人"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/updatabrrower" />
+        app:layout_constraintTop_toBottomOf="@+id/create_borrower" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

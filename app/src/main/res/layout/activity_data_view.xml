@@ -25,7 +25,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextgetname">
+            app:layout_constraintTop_toBottomOf="@+id/item_search_field">
 
             <ListView
                 android:id="@+id/lv"
@@ -40,10 +40,9 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/sideBarButton"
             android:layout_width="65dp"
             android:layout_height="48dp"
-            android:onClick="opendrawer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
@@ -58,14 +57,14 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextgetname"
+            android:id="@+id/item_search_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="輸入產品名稱"
             android:inputType="textPersonName"
             app:layout_constraintEnd_toStartOf="@+id/button3"
-            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            app:layout_constraintStart_toEndOf="@+id/sideBarButton"
             app:layout_constraintTop_toTopOf="parent" />
 
 

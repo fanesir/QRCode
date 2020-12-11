@@ -24,7 +24,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class HttpRequest {
-    public static final String PORTOCOL = "http";
+    public static final String PROTOCOL = "http";
     public static final String HOST = "192.168.1.8";
     public static final int PORT = 4000;
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -78,7 +78,7 @@ public class HttpRequest {
 
     private HttpUrl.Builder makeURL() {
         return new HttpUrl.Builder()
-                .scheme(PORTOCOL)
+                .scheme(PROTOCOL)
                 .host(HOST)
                 .port(PORT);
     }
@@ -128,14 +128,10 @@ public class HttpRequest {
         return RequestBody.create(jsonObject.toString(), JSON);
     }
 
-    private RequestBody MakeJson(JSONArray jsonObject) {
-        return RequestBody.create(jsonObject.toString(), JSON);
-    }
-
-    public void Login(String account, String pasword) throws JSONException, IOException, LoginError {
+    public void Login(String account, String password) throws JSONException, IOException, LoginError {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("account", account);
-        jsonObject.put("password", pasword);
+        jsonObject.put("password", password);
         RequestBody body = this.MakeJson(jsonObject);
         Response response = this.Post("/login", body);
         if (response.code() != 200) {
@@ -168,15 +164,14 @@ public class HttpRequest {
         return new ItemInfo(new JSONObject(response.body().string()));
     }
 
-
     public List<ItemInfo> GetItem(int limit, int offset, ItemState state) throws IOException, JSONException, GetDataError {
-
         String[][] query;
         if (state == null) {
             query = new String[][]{//Response 請求
                     {"limit", Integer.toString(limit)},
                     {"offset", Integer.toString((offset))}
             };
+
         } else {
             query = new String[][]{//Response 請求
                     {"limit", Integer.toString(limit)},
@@ -184,6 +179,7 @@ public class HttpRequest {
                     {"state", state.toJson().toString()}
             };
         }
+
         Response response = this.Get("/api/item", query);
         if (response.code() != 200) {
             Log.d("HttpError", response.body().string());
@@ -200,12 +196,9 @@ public class HttpRequest {
     }
 
 
-    public List<ItemInfo> searchItem(String EDname) throws IOException, JSONException, GetDataError {
-
-        String[][] query;
-        query = new String[][]{//Response 請求
-                {"name", (EDname)}
-
+    public List<ItemInfo> SearchItem(String EDname) throws IOException, JSONException, GetDataError {
+        String[][] query = new String[][]{
+                {"name", EDname}
         };
         Response response = this.Get("/api/item", query);
         if (response.code() != 200) {
@@ -222,10 +215,12 @@ public class HttpRequest {
     }
 
     //出借
-    public void BrrowSignUp(String brrname, String brrnumber) throws JSONException, IOException, SignUpError {
+    public void CreateBorrower(String name, String phone_number) throws JSONException, IOException, SignUpError {
         JSONObject object = new JSONObject();
-        object.put("name", brrname);
-        object.put("phone", brrnumber);
+
+        object.put("name", name);
+        object.put("phone", phone_number);
+
 
         RequestBody body = this.MakeJson(object);
         Response response = this.Post("/api/borrower", body);
@@ -235,8 +230,25 @@ public class HttpRequest {
         }
     }
 
-    public List<BrItemInfo> BrGetItem(int limit, int offset) throws IOException, JSONException, GetDataError {
+    //增加此借出人清單
+    public void CreateThisAccountBorrowerItem(int id, String borrow_date, String reply_date, String note, int BrrowItemID) throws JSONException, IOException, SignUpError {
 
+        JSONObject object = new JSONObject();
+        object.put("borrower_id", id);
+        object.put("borrow_date", borrow_date);//
+        object.put("reply_date", reply_date);//
+        object.put("note", note);
+        object.put("item_id", BrrowItemID);
+
+        RequestBody body = this.MakeJson(object);
+        Response response = this.Post("/api/borrow_record", body);
+        if (response.code() != 200) {
+            Log.d("HttpError", response.body().string());
+            throw new SignUpError();
+        }
+    }
+
+    public List<BorrowerInfo> GetBorrower(int limit, int offset) throws IOException, JSONException, GetDataError {
         String[][] query;
 
         query = new String[][]{//Response 請求
@@ -250,22 +262,48 @@ public class HttpRequest {
             Log.i("HttpError", response.body().string());
             throw new GetDataError();
         }
+
         JSONArray resultt = new JSONArray(response.body().string());
-        List<BrItemInfo> array = new LinkedList<>();
+        List<BorrowerInfo> array = new LinkedList<>();
         for (int i = 0; i < resultt.length(); ++i) {
-
-            JSONObject data = (JSONObject) resultt.get(i);
-
-            array.add(new BrItemInfo(data));
+            JSONObject data = (JSONObject) resultt.get(i);//json拿到的
+            array.add(new BorrowerInfo(data));//放進去陣列
         }
         return array;
     }
 
-    public void UpdataBrItem(String brname, String brphone, int brItem) throws IOException, JSONException, UpdateDataError {
+    public List<BorrowerInfo> GetBorrowerRecord(Integer id, String name, int limit, int offset) throws IOException, JSONException, GetDataError {
+        String[][] query;
+
+        query = new String[][]{//Response 請求
+                {"id", Integer.toString(id)},
+                {"name", name},
+                {"limit", Integer.toString(limit)},
+                {"offset", Integer.toString((offset))}
+        };
+
+        Response response = this.Get("/api/borrow_record", query);
+        if (response.code() != 200) {
+            Log.i("HttpError", response.body().string());
+            throw new GetDataError();
+        }
+
+        JSONArray result = new JSONArray(response.body().string());
+        List<BorrowerInfo> array = new LinkedList<>();
+        for (int i = 0; i < result.length(); ++i) {
+            JSONObject data = (JSONObject) result.get(i);//json拿到的
+            array.add(new BorrowerInfo(data));//放進去陣列
+        }
+        return array;
+    }
+
+    public void UpdateBorrower(String name, String phone_number, int BorrowedItemID) throws IOException, JSONException, UpdateDataError {
+
         JSONObject body = new JSONObject();
-        body.put("id", brItem);
-        body.put("name", brname);
-        body.put("phone", brphone);
+
+        body.put("id", BorrowedItemID);
+        body.put("name", name);
+        body.put("phone", phone_number);
 
         Response response = this.Put("/api/borrower", this.MakeJson(body));
         if (response.code() != 200) {
@@ -274,7 +312,6 @@ public class HttpRequest {
         }
 
     }
-
 
     static class ItemState {
         public String location;
@@ -295,7 +332,6 @@ public class HttpRequest {
     }
 
     public void UpdateItem(String item_id, String location, String note, ItemState state) throws IOException, JSONException, UpdateDataError {
-
         JSONObject body = new JSONObject();
         body.put("item_id", item_id);
         if (location != null) {
@@ -311,7 +347,6 @@ public class HttpRequest {
             stateJson.put("fixing", state.fixing);
             stateJson.put("unlabel", state.unlabel);
             body.put("state", stateJson);
-
         }
         Response response = this.Put("/api/item", this.MakeJson(body));
         if (response.code() != 200) {
@@ -319,7 +354,6 @@ public class HttpRequest {
             throw new UpdateDataError();
         }
     }
-
 
     static class ItemInfo extends JsonData implements Serializable {
         protected Integer age_limit;
@@ -335,20 +369,15 @@ public class HttpRequest {
         protected boolean fixing;
         protected boolean unlabel;
 
-        protected String brname;
-        protected String brnumber;
-
         ItemInfo(JSONObject object) throws JSONException {
             super(object);
-            this.age_limit = this.defaultGet("age_limit", 0);//為了不讓它重新創建資料型別(Integer)
+            this.age_limit = this.defaultGet("age_limit", 0);
             this.cost = this.defaultGet("cost", 0);
             this.date = this.defaultGet("date", "");
             this.item_id = this.mustGet("item_id");
             this.location = this.mustGet("location");
             this.name = this.mustGet("name");
             this.note = this.mustGet("note");
-            this.brname = this.mustGet("name");
-            // this.brnumber = this.mustGet("phone");
 
             JSONObject state = this.mustGet("state");
             this.correct = state.getBoolean("correct");
@@ -358,47 +387,34 @@ public class HttpRequest {
         }
     }
 
-    static class BrItemInfo extends JsonData implements Serializable {
-
+    static class BorrowerInfo extends JsonData implements Serializable {
         protected int id;
-        protected String brname;
-        protected String brnumber;
+        protected String name;
+        protected String phone_number;
 
-        BrItemInfo(JSONObject object) throws JSONException {
+        BorrowerInfo(JSONObject object) throws JSONException {
             super(object);
 
             this.id = this.mustGet("id");
-            this.brname = this.mustGet("name");
-            this.brnumber = this.mustGet("phone");
-
-
+            this.name = this.mustGet("name");
+            this.phone_number = this.mustGet("phone");
         }
     }
-}
 
+    class ThisAccountBurrowerItem extends JsonData implements Serializable {
+        protected int id;
+        protected String name;
+        protected String phone_number;
+        protected String note;
 
-class Person {
-    protected final String name;
-
-    Person(String name) {
-        this.name = name;
+        ThisAccountBurrowerItem(JSONObject object) throws JSONException {
+            super(object);
+            this.id = this.mustGet("id");
+            this.name = this.mustGet("name");
+            this.phone_number = this.mustGet("phone");
+            this.note = this.mustGet("note");
+        }
     }
 
-    String introduce() {
-        return this.name;
-    }
-}
 
-class Main {
-
-
-    static public void main(String[] arg) {
-        Person person1 = new Person("A");
-        Person person2 = new Person("B");
-        Person person3 = new Person("C");
-        person1.introduce();
-        person2.introduce();
-        person3.introduce();
-        String a = person3.name;
-    }
 }

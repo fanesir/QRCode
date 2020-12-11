@@ -28,15 +28,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
-    TextView showtext;
+    TextView itemDescription;
     SurfaceView surfaceView;
     BarcodeDetector barcodeDetector;
     CameraSource cameraSource;
     HttpRequest.ItemInfo info;
 
     CheckBox correct, discard, fixing, unlabel;
-    Button confirmUpdate, updatabutton;
-    TextView textView6;
+    Button confirmUpdate, updateButton;
 
     OnClickListener checkBoxUpdate = view -> {
         if (info == null)
@@ -91,18 +90,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getPermisscar();
+        getPermission();
         surfaceView = findViewById(R.id.cam_surfaceView);
-        showtext = findViewById(R.id.show_qr_text);
+        itemDescription = findViewById(R.id.show_qr_text);
         correct = findViewById(R.id.correct);
         discard = findViewById(R.id.discard);
         fixing = findViewById(R.id.fixing);
         unlabel = findViewById(R.id.unlabel);
         confirmUpdate = findViewById(R.id.update_confirm);
-        updatabutton = findViewById(R.id.updatabutton);//更新訂單內容
+        updateButton = findViewById(R.id.updatabutton);//更新訂單內容
 
-        updatabutton.setVisibility(View.INVISIBLE);
-        updatabutton.setOnClickListener(this.toItemDetail);
+        updateButton.setVisibility(View.INVISIBLE);
+        updateButton.setOnClickListener(this.toItemDetail);
 
         confirmUpdate.setVisibility(View.INVISIBLE);
         confirmUpdate.setOnClickListener(confirmUpdateCallback);
@@ -155,13 +154,11 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         lastQr = input;
                     }
-                    showtext.post(() -> { // 設定textview
 
+                    itemDescription.post(() -> { // 設定textview
                         MainActivity.this.getAndUpdateItem(input);
-
                     });
                 }
-
             }
         });
     }
@@ -169,33 +166,32 @@ public class MainActivity extends AppCompatActivity {
     public void getAndUpdateItem(String item_id) {//pro
         new Thread(() -> {
             try {
-                runOnUiThread(() -> updatabutton.setVisibility(View.VISIBLE));//改由ui的執行序來執行
+                runOnUiThread(() -> updateButton.setVisibility(View.VISIBLE));//改由ui的執行序來執行
 
                 HttpRequest request = HttpRequest.getInstance();
                 HttpRequest.ItemInfo info = request.GetItem(item_id);
                 info.correct = true;
                 this.info = info;
-                updateViewer();//跑文字
-                HttpRequest.ItemState state = new HttpRequest.ItemState();
+                updateViewer();
 
+                HttpRequest.ItemState state = new HttpRequest.ItemState();
                 state.correct = true;
                 state.discard = info.discard;// this長什麼樣子 = 資料來源
                 state.fixing = info.fixing;
                 state.unlabel = info.unlabel;
                 request.UpdateItem(item_id, null, null, state);
 
-
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             } catch (HttpRequest.GetDataError e) {
                 runOnUiThread(() -> {
                     Toast.makeText(MainActivity.this, "無此產品", Toast.LENGTH_SHORT).show();
-                    showtext.setText("");
+                    itemDescription.setText("");
                 });
             } catch (HttpRequest.UpdateDataError e) {
                 runOnUiThread(() -> {
                     Toast.makeText(MainActivity.this, "更新失敗", Toast.LENGTH_SHORT).show();
-                    showtext.setText("");
+                    itemDescription.setText("");
                 });
             }
         }).start();
@@ -208,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             confirmUpdate.setVisibility(View.INVISIBLE);
 
-            showtext.setText(
+            itemDescription.setText(
                     String.format(getString(R.string.item_result_template),
                             this.info.item_id,
                             this.info.item_id,
@@ -225,24 +221,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     final View.OnClickListener toItemDetail = view -> {
-        Intent intent = new Intent(this, UpdataContent.class);
-
+        Intent intent = new Intent(this, UpdateItemContent.class);
         intent.putExtra("item_info", this.info);
-
         startActivity(intent);
     };
 
-
-    public void getPermisscar() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)//權限
-                != PackageManager.PERMISSION_GRANTED)
+    public void getPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
-        {
         }
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {//KeyEvent.KEYCODE_BACK=4
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             Intent intent = new Intent(this, DataViewActivity.class);
             finish();
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -251,6 +242,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
-
 }

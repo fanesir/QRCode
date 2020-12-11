@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -38,10 +36,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     ListView lv;
     NavigationView navigationView;
 
-
-    Button put_cam, new_brrow, showbrrow;
-    EditText editTextgetname;
-    CheckBox getall, inventory, no_inventory;
+    EditText searchField;
     HttpRequest.ItemState searchState;
     public static List<HttpRequest.ItemInfo> list_view_data = new LinkedList<>();//宣告空的陣列
 
@@ -49,22 +44,24 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_view);
-        lv = findViewById(R.id.lv);
+
         ItemAdapter adapter = new ItemAdapter(list_view_data);
-        editTextgetname = findViewById(R.id.editTextgetname);
+        lv = findViewById(R.id.lv);
+        lv.setAdapter(adapter);
+
+        searchField = findViewById(R.id.item_search_field);
         SwipeRefreshLayout pullToRefresh = findViewById(R.id.swiperefresh);
         navigationView = findViewById(R.id.nav_view);
-        new_brrow = navigationView.getHeaderView(0).findViewById(R.id.updatabrrower);
-        showbrrow = navigationView.getHeaderView(0).findViewById(R.id.showbrrow);
-        put_cam = navigationView.getHeaderView(0).findViewById(R.id.push_cam);
-        getall = navigationView.getHeaderView(0).findViewById(R.id.fixing);
-        inventory = navigationView.getHeaderView(0).findViewById(R.id.discard);
-        no_inventory = navigationView.getHeaderView(0).findViewById(R.id.correct);
 
-        lv.setAdapter(adapter);
-        //get 裡面的button4
-        put_cam.setOnClickListener((View v) -> {
-            push_cam();
+        View headerView = navigationView.getHeaderView(0);
+        Button showbrrow = headerView.findViewById(R.id.showbrrow);
+        CheckBox getall = headerView.findViewById(R.id.fixing);
+        CheckBox inventory = headerView.findViewById(R.id.discard);
+        CheckBox no_inventory = headerView.findViewById(R.id.correct);
+        headerView.findViewById(R.id.start_camera_activity).setOnClickListener(this::startCameraActivity);
+        headerView.findViewById(R.id.create_borrower).setOnClickListener(view -> {
+            Intent intent = new Intent(DataViewActivity.this, NewBorrowerActivity.class);
+            startActivity(intent);
         });
 
         getall.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -88,7 +85,6 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         no_inventory.setOnCheckedChangeListener((compoundButton, b) -> {
             if (no_inventory.isChecked()) {
-
                 searchState = new HttpRequest.ItemState();
                 searchState.correct = false;
                 getall.setChecked(false);
@@ -96,13 +92,9 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             }
             clearAndReloadItems(20);
         });
-        new_brrow.setOnClickListener(view -> {
-            Intent intent = new Intent(DataViewActivity.this, NewBrrowActivity.class);
 
-            startActivity(intent);
-        });
         showbrrow.setOnClickListener(view -> {
-            Intent intent = new Intent(DataViewActivity.this, ShowBrrowActivity.class);
+            Intent intent = new Intent(DataViewActivity.this, ListBorrowerActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         });
@@ -114,24 +106,13 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
             Toast.makeText(DataViewActivity.this, "選取修改:" + info.name, Toast.LENGTH_LONG).show();
 
-            Intent intent = new Intent(DataViewActivity.this, UpdataContent.class);
+            Intent intent = new Intent(DataViewActivity.this, UpdateItemContent.class);
             intent.putExtra("item_info", info);
 
             startActivity(intent);
         });
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                //drawer.closeDrawer(GravityCompat.START);
-
-                return false;
-            }
-        });
-
-
         pullToRefresh.setOnRefreshListener(() -> {
-
             Thread thread = loadAndRefreshItems(5);
             new Thread(() -> {
                 try {
@@ -143,10 +124,9 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             }).start();
         });
 
+        findViewById(R.id.sideBarButton).setOnClickListener(this::openSideBar);
 
         loadAndRefreshItems(20);//都先拿20個
-
-
     }
 
     Thread clearAndReloadItems(int limit) {
@@ -159,7 +139,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             try {
                 List<HttpRequest.ItemInfo> result = null;//裝各種物件資料
                 if (limit != 0) {
-                    result = HttpRequest.getInstance().GetItem(limit, list_view_data.size(), searchState);//
+                    result = HttpRequest.getInstance().GetItem(limit, list_view_data.size(), searchState);
                 }
 
                 List<HttpRequest.ItemInfo> finalResult = result;
@@ -179,11 +159,10 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         return thread;
     }
 
-    Thread searchloadAndRefreshItems(String name) {
+    Thread searchLoadAndRefreshItems(String name) {
         Thread thread = new Thread(() -> {
-
             try {
-                List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().searchItem(name);
+                List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().SearchItem(name);
 
                 runOnUiThread(() -> {
                     list_view_data.addAll(result);
@@ -200,45 +179,38 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {//KeyEvent.KEYCODE_BACK=4
-            toushgoBack();
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            AlertDialog.Builder ad = new AlertDialog.Builder(this);
+            ad.setTitle("離開");
+            ad.setMessage("離開程式?");
+            ad.setPositiveButton("是", (dialogInterface, i) -> {
+                System.exit(0); // 離開程式
+            }).show();
 
             return true;
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    public void toushgoBack() {
-        AlertDialog.Builder ad = new AlertDialog.Builder(this);
-        ad.setTitle("離開");
-        ad.setMessage("離開程式?");
-        ad.setPositiveButton("是", (dialogInterface, i) -> {
-            System.exit(0); // 離開程式
-
-        }).show();
-    }
-
-    public void push_cam() {
+    public void startCameraActivity(View v) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
-
-    public void opendrawer(View view) {
+    public void openSideBar(View view) {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.openDrawer(GravityCompat.START);//  drawer.openDrawer(GravityCompat.START);
-
     }
 
     public void search(View view) {
-        String Getname = editTextgetname.getText().toString();
-        searchloadAndRefreshItems(Getname);
+        String name = searchField.getText().toString();
+        searchLoadAndRefreshItems(name);
         clearAndReloadItems(0);//清掉
 
     }
 
-    class ItemAdapter extends BaseAdapter {
+    static class ItemAdapter extends BaseAdapter {
         private final List<HttpRequest.ItemInfo> list;
         List<String> listt = new ArrayList<>();
 

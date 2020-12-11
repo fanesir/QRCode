@@ -2,7 +2,7 @@
     <string name="app_name">My_QR</string>
     <string name="login_failed">login failed, 帳密打錯了</string>
     <string name="sign_up_failed">sign up failed</string>
-    <string name="sing_up_success">sign up success</string>
+    <string name="sign_up_success">sign up success</string>
     <string name="login_success">login success</string>
     <string name="item_result_template">掃描編號:\n%s\n資料庫編號:%s\n產品名稱:%s\n產品位置:%s</string>
     <string name="item_id">財產編號:\n</string>

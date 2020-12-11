@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class UpdataBrrowContent extends AppCompatActivity {
     EditText edupdname, edupdphone;
-    HttpRequest.BrItemInfo brItemInfo;
+    HttpRequest.BorrowerInfo borrowerInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,10 +24,11 @@ public class UpdataBrrowContent extends AppCompatActivity {
         edupdphone = findViewById(R.id.updphone);
         Intent intent = UpdataBrrowContent.this.getIntent();
 
-        brItemInfo = (HttpRequest.BrItemInfo) intent.getSerializableExtra("Brrow");
+        borrowerInfo = (HttpRequest.BorrowerInfo) intent.getSerializableExtra("Brrow");
 
-        edupdname.setText("" + brItemInfo.brname);
-        edupdphone.setText("" + brItemInfo.brnumber);
+        edupdname.setText("" + borrowerInfo.name);
+        edupdphone.setText("" + borrowerInfo.phone_number);
+
 
     }
 
@@ -35,12 +36,11 @@ public class UpdataBrrowContent extends AppCompatActivity {
         String name = edupdname.getText().toString();
         String phone = edupdphone.getText().toString();
 
-        int id = brItemInfo.id;
+        int id = borrowerInfo.id;
         new Thread(() -> {
             try {
-                HttpRequest.getInstance().UpdataBrItem(name, phone, id);
+                HttpRequest.getInstance().UpdateBorrower(name, phone, id);
                 runOnUiThread(() -> Toast.makeText(UpdataBrrowContent.this, "更新借出人成功", Toast.LENGTH_LONG).show());
-
                 Intent intent = new Intent(UpdataBrrowContent.this, DataViewActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -53,5 +53,4 @@ public class UpdataBrrowContent extends AppCompatActivity {
         }).start();
 
     }
-
 }

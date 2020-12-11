@@ -12,14 +12,16 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".UpdataBrrowContent"></activity>
-        <activity android:name=".ShowBrrowActivity" />
-        <activity android:name=".NewBrrowActivity" />
-        <activity android:name=".UpdataContent" />
+        <activity android:name=".AddThisAccountWantBorrowerctivity"></activity>
+        <activity android:name=".ShowThisAccountBorrowerDataActivity" />
+        <activity android:name=".UpdataBrrowContent" />
+        <activity android:name=".ListBorrowerActivity" />
+        <activity android:name=".NewBorrowerActivity" />
+        <activity android:name=".UpdateItemContent" />
         <activity android:name=".DataViewActivity" />
         <activity android:name=".ApplicationActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".LoingMainActivity">
+        <activity android:name=".LoginMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +29,6 @@
             </intent-filter>
         </activity>
     </application>
-
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-permission android:name="android.permission.INTERNET" />

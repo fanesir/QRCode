@@ -11,42 +11,40 @@ import java.io.IOException;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class NewBrrowActivity extends AppCompatActivity {
-    EditText brrowname, brrownumber;
+public class NewBorrowerActivity extends AppCompatActivity {
+    EditText borrowerName, borrowerPhoneNumber;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_brrow);
-        brrowname = findViewById(R.id.edbrname);
-        brrownumber = findViewById(R.id.edbrnumber);
+        borrowerName = findViewById(R.id.edbrname);
+        borrowerPhoneNumber = findViewById(R.id.edbrnumber);
     }
 
-    public void updatabrrow(View view) {
-        String brname;
-        String brnumber;
+    public void createBorrower(View view) {
+        String name = borrowerName.getText().toString();
+        String phoneNumber = borrowerPhoneNumber.getText().toString();
 
-        brname = brrowname.getText().toString();
-        brnumber = brrownumber.getText().toString();
-        if (brname.equals("") || brnumber.equals("")) {
-            Toast.makeText(NewBrrowActivity.this, "不可空白", Toast.LENGTH_SHORT).show();
+
+        if (name.equals("") || phoneNumber.equals("")) {
+            Toast.makeText(NewBorrowerActivity.this, "不可空白", Toast.LENGTH_SHORT).show();
             return;
         }
 
         new Thread(() -> {
             try {
-                HttpRequest.getInstance().BrrowSignUp(brname, brnumber);
+                HttpRequest.getInstance().CreateBorrower(name, phoneNumber);
                 runOnUiThread(() -> {
-                    Toast.makeText(NewBrrowActivity.this, R.string.sing_up_success, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewBorrowerActivity.this, R.string.sign_up_success, Toast.LENGTH_SHORT).show();
                 });
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             } catch (HttpRequest.SignUpError signUpError) {
                 signUpError.printStackTrace();
-
                 runOnUiThread(() -> {
-                    Toast.makeText(NewBrrowActivity.this, "fail", Toast.LENGTH_LONG).show();
+                    Toast.makeText(NewBorrowerActivity.this, "fail", Toast.LENGTH_LONG).show();
                 });
             }
         }).start();

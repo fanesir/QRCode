@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-public class LoingMainActivity extends AppCompatActivity {
+public class LoginMainActivity extends AppCompatActivity {
     EditText login_accout, login_password;
 
     final String COOKIE_FILE_NAME = "accfile";//不會動的大寫加底線
@@ -81,11 +81,7 @@ public class LoingMainActivity extends AppCompatActivity {
                         Log.d("hello", accountInfo.toString());
                         fos.write(accountInfo.toString().getBytes());
                         //Toast.makeText(this,ACCANDPAS,Toast.LENGTH_SHORT).show();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
                     Toast.makeText(this, R.string.login_success, Toast.LENGTH_SHORT).show();
@@ -98,7 +94,7 @@ public class LoingMainActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (HttpRequest.LoginError e) {
                 runOnUiThread(() -> {
-                    Toast.makeText(LoingMainActivity.this, R.string.login_failed, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginMainActivity.this, R.string.login_failed, Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();

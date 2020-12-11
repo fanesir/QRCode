@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UpdataContent">
+    tools:context=".UpdateItemContent">
 
     <TextView
-        android:id="@+id/Titlee"
+        android:id="@+id/title"
         android:layout_width="263dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/updalocat"
+        android:id="@+id/location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -36,11 +36,11 @@
         android:layout_height="wrap_content"
         android:text="存置地點:"
         android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/updalocat"
-        app:layout_constraintStart_toStartOf="@+id/updalocat" />
+        app:layout_constraintBottom_toTopOf="@+id/location"
+        app:layout_constraintStart_toStartOf="@+id/location" />
 
     <EditText
-        android:id="@+id/upnote"
+        android:id="@+id/note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -50,10 +50,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/upid" />
+        app:layout_constraintTop_toBottomOf="@+id/id" />
 
     <EditText
-        android:id="@+id/upid"
+        android:id="@+id/id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -63,14 +63,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/updalocat" />
+        app:layout_constraintTop_toBottomOf="@+id/location" />
 
     <Button
         android:id="@+id/pushbutton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:onClick="putupdata"
+        android:onClick="submitData"
         android:text="確認送出"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -83,8 +83,8 @@
         android:layout_height="wrap_content"
         android:text="財產名稱:"
         android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/upid"
-        app:layout_constraintStart_toStartOf="@+id/upid" />
+        app:layout_constraintBottom_toTopOf="@+id/id"
+        app:layout_constraintStart_toStartOf="@+id/id" />
 
     <TextView
         android:id="@+id/textView5"
@@ -92,8 +92,8 @@
         android:layout_height="wrap_content"
         android:text="備註:"
         android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/upnote"
-        app:layout_constraintStart_toStartOf="@+id/upnote" />
+        app:layout_constraintBottom_toTopOf="@+id/note"
+        app:layout_constraintStart_toStartOf="@+id/note" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"
@@ -103,10 +103,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/upnote">
+        app:layout_constraintTop_toBottomOf="@+id/note">
 
         <CheckBox
-            android:id="@+id/fixingg"
+            android:id="@+id/fixing"
             android:layout_width="76dp"
             android:layout_height="41dp"
             android:text="送修"
@@ -114,24 +114,24 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <CheckBox
-            android:id="@+id/unlabell"
+            android:id="@+id/unlabel"
             android:layout_width="99dp"
             android:layout_height="41dp"
             android:text="標籤未貼"
             android:textSize="13sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fixingg" />
+            app:layout_constraintTop_toBottomOf="@+id/fixing" />
 
         <CheckBox
-            android:id="@+id/discardd"
+            android:id="@+id/discard"
             android:layout_width="76dp"
             android:layout_height="41dp"
             android:text="報廢"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/correctt" />
+            app:layout_constraintTop_toBottomOf="@+id/correct" />
 
         <CheckBox
-            android:id="@+id/correctt"
+            android:id="@+id/correct"
             android:layout_width="76dp"
             android:layout_height="41dp"
             android:text="符合"
@@ -148,7 +148,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Titlee"
+        app:layout_constraintTop_toBottomOf="@+id/title"
         tools:srcCompat="@tools:sample/avatars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

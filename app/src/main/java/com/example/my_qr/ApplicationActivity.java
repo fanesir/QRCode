@@ -43,8 +43,8 @@ public class ApplicationActivity extends AppCompatActivity {
             try {
                 HttpRequest.getInstance().SignUp(username, account, password);//傳送給http一組帳密
                 runOnUiThread(() -> {
-                    Toast.makeText(this, R.string.sing_up_success, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(this, LoingMainActivity.class);
+                    Toast.makeText(this, R.string.sign_up_success, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, LoginMainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 });
