@@ -1,8 +1,10 @@
 package com.example.my_qr;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,36 +23,31 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
 public class DataViewActivity extends AppCompatActivity { //登入成功的地方
-    private static String TAG = "DEBUG_LOG";
     ListView lv;
     NavigationView navigationView;
 
     EditText searchField;
     HttpRequest.ItemState searchState;
-    public static List<HttpRequest.ItemInfo> list_view_data = new LinkedList<>();//宣告空的陣列
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_view);
 
-        ItemAdapter adapter = new ItemAdapter(list_view_data);
+        ItemAdapter adapter = new ItemAdapter(this, searchState);
         lv = findViewById(R.id.lv);
         lv.setAdapter(adapter);
 
         searchField = findViewById(R.id.item_search_field);
-        SwipeRefreshLayout pullToRefresh = findViewById(R.id.swiperefresh);
         navigationView = findViewById(R.id.nav_view);
 
         View headerView = navigationView.getHeaderView(0);
@@ -70,7 +67,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
                 inventory.setChecked(false);
                 no_inventory.setChecked(false);
             }
-            clearAndReloadItems(20);
+            clearAndReloadItems();
         });
 
         inventory.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -80,7 +77,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
                 getall.setChecked(false);
                 no_inventory.setChecked(false);
             }
-            clearAndReloadItems(20);
+            clearAndReloadItems();
         });
 
         no_inventory.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -90,7 +87,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
                 getall.setChecked(false);
                 inventory.setChecked(false);
             }
-            clearAndReloadItems(20);
+            clearAndReloadItems();
         });
 
         showbrrow.setOnClickListener(view -> {
@@ -99,7 +96,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             startActivity(intent);
         });
 
-        //AdapterView 是一個類別 裡面的 intface OnItemClickListener void() 介面
+        //AdapterView 是一個類別 裡面的 interface OnItemClickListener void() 介面
         lv.setOnItemClickListener((adapterView, view, i, l) -> {
             ItemAdapter itemAdapter = (ItemAdapter) adapterView.getAdapter();
             HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) itemAdapter.getItem(i);//第幾個並把資料帶過去
@@ -112,70 +109,15 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             startActivity(intent);
         });
 
-        pullToRefresh.setOnRefreshListener(() -> {
-            Thread thread = loadAndRefreshItems(5);
-            new Thread(() -> {
-                try {
-                    thread.join();//從中介入
-                } catch (InterruptedException ignored) {
-                } finally {
-                    runOnUiThread(() -> pullToRefresh.setRefreshing(false));
-                }
-            }).start();
-        });
-
         findViewById(R.id.sideBarButton).setOnClickListener(this::openSideBar);
-
-        loadAndRefreshItems(20);//都先拿20個
     }
 
-    Thread clearAndReloadItems(int limit) {
-        list_view_data.clear();
-        return loadAndRefreshItems(limit);
+    void clearAndReloadItems() {
+        lv.setAdapter(new ItemAdapter(this, searchState));
     }
 
-    Thread loadAndRefreshItems(int limit) {
-        Thread thread = new Thread(() -> {
-            try {
-                List<HttpRequest.ItemInfo> result = null;//裝各種物件資料
-                if (limit != 0) {
-                    result = HttpRequest.getInstance().GetItem(limit, list_view_data.size(), searchState);
-                }
-
-                List<HttpRequest.ItemInfo> finalResult = result;
-                runOnUiThread(() -> {
-                    if (limit != 0) {
-                        list_view_data.addAll(finalResult);
-                    }
-                    synchronized (lv.getAdapter()) {
-                        ((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
-                    }
-                });
-            } catch (IOException | JSONException | HttpRequest.GetDataError e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
-        return thread;
-    }
-
-    Thread searchLoadAndRefreshItems(String name) {
-        Thread thread = new Thread(() -> {
-            try {
-                List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().SearchItem(name);
-
-                runOnUiThread(() -> {
-                    list_view_data.addAll(result);
-                    synchronized (lv.getAdapter()) {
-                        ((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
-                    }
-                });
-            } catch (IOException | JSONException | HttpRequest.GetDataError e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
-        return thread;
+    void searchLoadAndRefreshItems(String name) {
+//      List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().SearchItem(name);
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
@@ -206,20 +148,56 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     public void search(View view) {
         String name = searchField.getText().toString();
         searchLoadAndRefreshItems(name);
-        clearAndReloadItems(0);//清掉
-
+        clearAndReloadItems();//清掉
     }
 
     static class ItemAdapter extends BaseAdapter {
-        private final List<HttpRequest.ItemInfo> list;
-        List<String> listt = new ArrayList<>();
+        protected final List<HttpRequest.ItemInfo> list = new ArrayList<>();
+        protected final int loadThreshold;
+        protected final int limit = 20;
+        protected final HttpRequest.ItemState searchState;
+        protected final Activity activity;
+        protected boolean done = false;
+        int times = 0;
+        int innerTimes = 0;
 
-        ItemAdapter(List<HttpRequest.ItemInfo> list) {
-            this.list = list;
+        ItemAdapter(Activity activity, HttpRequest.ItemState searchState) {
+            this(activity, searchState, 20);
         }
 
-        public void setData(List<String> list) {
-            listt = list;
+        ItemAdapter(Activity activity, HttpRequest.ItemState searchState, int loadThreshold) {
+            this.searchState = searchState;
+            this.loadThreshold = loadThreshold;
+            this.activity = activity;
+            loadItems();
+        }
+
+        void loadItems() {
+            Log.d("loadItems Times", (times += 1) + "");
+
+            new Thread(() -> {
+                synchronized (ItemAdapter.this) {
+                    if (done) {
+                        return;
+                    }
+                    Log.d("loadItems Thread Times", (innerTimes += 1) + "");
+                    try {
+                        List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().GetItem(limit, this.list.size(), searchState);
+                        if (result.size() == 0) {
+                            done = true;
+                        } else {
+                            activity.runOnUiThread(() -> {
+                                this.list.addAll(result);
+                                notifyDataSetChanged();
+                            });
+                        }
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    } catch (HttpRequest.GetDataError getDataError) {
+                        done = true;
+                    }
+                }
+            }).start();
         }
 
         @Override
@@ -229,13 +207,11 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         @Override
         public Object getItem(int i) {
-
             return this.list.get(i);
         }
 
         @Override
         public long getItemId(int i) {
-
             return i;
         }
 
@@ -244,6 +220,9 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             if (view == null) {
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());//初始一個背後 layout畫板
                 view = inflater.inflate(R.layout.list_item, null);
+            }
+            if (!done && i + this.loadThreshold > this.list.size()) {
+                this.loadItems();
             }
             HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) this.getItem(i);//?
 
