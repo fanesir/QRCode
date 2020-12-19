@@ -198,7 +198,7 @@ public class HttpRequest {
 
     public List<ItemInfo> SearchItem(String EDname) throws IOException, JSONException, GetDataError {
         String[][] query = new String[][]{
-                {"name", EDname}
+                {"name", EDname},
         };
         Response response = this.Get("/api/item", query);
         if (response.code() != 200) {

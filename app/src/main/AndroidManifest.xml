@@ -2,14 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.my_qr">
-
+<!--    Theme.AppCompat.NoActionBar-->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar"
+        android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity android:name=".AddThisAccountWantBorrowerctivity"></activity>
@@ -20,7 +20,7 @@
         <activity android:name=".UpdateItemContent" />
         <activity android:name=".DataViewActivity" />
         <activity android:name=".ApplicationActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".CameraInputData" />
         <activity android:name=".LoginMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

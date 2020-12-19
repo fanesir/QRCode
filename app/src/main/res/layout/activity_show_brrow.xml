@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ListBorrowerActivity">
+    tools:context=".ListBorrowerActivity"
+    android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/showBrrowNameTextview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="顯示借出人姓名"
+        android:layout_gravity="center"
+        android:textSize="25sp" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/brswipLayout"
-        android:layout_width="411dp"
-        android:layout_height="187dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/showBrrowNameTextview"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:id="@+id/swipshowbrrowitem"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
 
         <ListView
             android:id="@+id/showbrrowlisst"
@@ -25,51 +27,54 @@
             android:layout_height="0dp"
             android:layout_marginStart="3dp"
             android:layout_marginEnd="3dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.47"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            app:layout_constraintHorizontal_bias="0.47" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <TextView
-        android:id="@+id/showBrrowNameTextview"
+        android:id="@+id/TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="顯示借出人姓名"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/swipshowbrrowitem"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:onClick="toAddThisAccountWantBorrowerItem"
-        android:src="@android:drawable/ic_menu_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
+        android:layout_gravity="center"
+        android:text="借出清單"
+        android:textSize="25sp" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipshowbrrowitem"
-        android:layout_width="409dp"
-        android:layout_height="405dp"
-        android:layout_marginBottom="88dp"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
-
+        android:id="@+id/brswipLayout"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
 
         <ListView
             android:id="@+id/borrow_record_list_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp" />
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+
+        android:layout_weight="1"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/imageButton5"
+            android:layout_width="56dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="CreateBorrowerAccount"
+            android:src="@drawable/accountadd" />
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:onClick="toAddThisAccountWantBorrowerItem"
+            android:src="@android:drawable/ic_menu_add" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

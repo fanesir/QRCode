@@ -21,12 +21,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class ListBorrowerActivity extends AppCompatActivity {
+
     ListView borrowerListView, lvShowAccountRecordItem;
     List<HttpRequest.BorrowerInfo> list_view_data = new LinkedList<>();
-    HttpRequest.BorrowerInfo getBorrowerInfo;
-
     List<HttpRequest.BorrowRecord> borrowRecordData = new LinkedList<>();
+    HttpRequest.BorrowerInfo getBorrowerInfo;
     int accountId;
+    List<HttpRequest.ItemInfo> itemInfos = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +41,11 @@ public class ListBorrowerActivity extends AppCompatActivity {
         borrowerListView = findViewById(R.id.showbrrowlisst);
         SwipeRefreshLayout brswipLayout = findViewById(R.id.brswipLayout);
         BorrowerListAdapter adapter = new BorrowerListAdapter(list_view_data);
+
+
         borrowerListView.setAdapter(adapter);
 
-
         lvShowAccountRecordItem = findViewById(R.id.borrow_record_list_view);
-        SwipeRefreshLayout swipshowbrrow = findViewById(R.id.swipshowbrrowitem);
         showThisAccountItemAdapter recordItemAdapter = new showThisAccountItemAdapter(borrowRecordData);
         lvShowAccountRecordItem.setAdapter(recordItemAdapter);
 
@@ -164,6 +165,11 @@ public class ListBorrowerActivity extends AppCompatActivity {
                         HttpRequest.getInstance().GetBorrowerRecord(accountId);//從這裡開始 要新增一個ｈｔｔｐ　拿到的方法，並顯示出來
 
                 runOnUiThread(() -> {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     if (limit != 0) {
                         borrowRecordData.add(result);
                     }
@@ -228,4 +234,8 @@ public class ListBorrowerActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void CreateBorrowerAccount(View v) {
+        Intent intent = new Intent(ListBorrowerActivity.this, NewBorrowerActivity.class);
+        startActivity(intent);
+    }
 }

@@ -27,7 +27,7 @@ import java.io.IOException;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-public class MainActivity extends AppCompatActivity {
+public class CameraInputData extends AppCompatActivity {
     TextView itemDescription;
     SurfaceView surfaceView;
     BarcodeDetector barcodeDetector;
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     OnClickListener confirmUpdateCallback = view -> {//pushbutton 與 chenkbox
-        if (MainActivity.this.info == null) {//如果什麼都沒輸入
+        if (CameraInputData.this.info == null) {//如果什麼都沒輸入
             return;
         }
         new Thread(() -> {
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (HttpRequest.UpdateDataError e) {
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "更新失敗", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraInputData.this, "更新失敗", Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_camera);
         getPermission();
         surfaceView = findViewById(R.id.cam_surfaceView);
         itemDescription = findViewById(R.id.show_qr_text);
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(CameraInputData.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
                 try {
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     itemDescription.post(() -> { // 設定textview
-                        MainActivity.this.getAndUpdateItem(input);
+                        CameraInputData.this.getAndUpdateItem(input);
                     });
                 }
             }
@@ -185,12 +185,12 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (HttpRequest.GetDataError e) {
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "無此產品", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraInputData.this, "無此產品", Toast.LENGTH_SHORT).show();
                     itemDescription.setText("");
                 });
             } catch (HttpRequest.UpdateDataError e) {
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "更新失敗", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraInputData.this, "更新失敗", Toast.LENGTH_SHORT).show();
                     itemDescription.setText("");
                 });
             }

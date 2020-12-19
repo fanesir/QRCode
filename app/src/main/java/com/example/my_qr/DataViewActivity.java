@@ -7,11 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,15 +29,18 @@ import java.util.List;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 
 public class DataViewActivity extends AppCompatActivity { //登入成功的地方
+    List<HttpRequest.ItemInfo> list;
     ListView lv;
-    NavigationView navigationView;
-
-    EditText searchField;
     HttpRequest.ItemState searchState;
+    HttpRequest.ItemInfo itemInfo;
+    EditText searchField;
+    MenuItem getAllItem, menuItemInventory, menuItemNoInventory;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,56 +49,63 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         ItemAdapter adapter = new ItemAdapter(this, searchState);
         lv = findViewById(R.id.lv);
+
         lv.setAdapter(adapter);
-
         searchField = findViewById(R.id.item_search_field);
-        navigationView = findViewById(R.id.nav_view);
 
-        View headerView = navigationView.getHeaderView(0);
-        Button showbrrow = headerView.findViewById(R.id.showbrrow);
-        CheckBox getall = headerView.findViewById(R.id.fixing);
-        CheckBox inventory = headerView.findViewById(R.id.discard);
-        CheckBox no_inventory = headerView.findViewById(R.id.correct);
-        headerView.findViewById(R.id.start_camera_activity).setOnClickListener(this::startCameraActivity);
-        headerView.findViewById(R.id.create_borrower).setOnClickListener(view -> {
-            Intent intent = new Intent(DataViewActivity.this, NewBorrowerActivity.class);
-            startActivity(intent);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.itemcamera) {
+                Intent intent = new Intent(DataViewActivity.this, CameraInputData.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+            if (id == R.id.aboutBrrower) {
+                Intent intent = new Intent(DataViewActivity.this, ListBorrowerActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+
+            return false;
         });
 
-        getall.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (getall.isChecked()) {
-                searchState = null;
-                inventory.setChecked(false);
-                no_inventory.setChecked(false);
-            }
+        Menu menu = navigationView.getMenu();
+        getAllItem = menu.findItem(R.id.getAllItem);
+        View getAllactionView = MenuItemCompat.getActionView(getAllItem);
+        getAllactionView.setOnClickListener(view -> {
+            searchState = null;
+            CompoundButton checkInventor = (CompoundButton) menuItemInventory.getActionView();//CompoundButton
+            CompoundButton checkNoInventor = (CompoundButton) menuItemNoInventory.getActionView();
+            checkInventor.setChecked(false);
+            checkNoInventor.setChecked(false);
             clearAndReloadItems();
         });
 
-        inventory.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (inventory.isChecked()) {
-                searchState = new HttpRequest.ItemState();
-                searchState.correct = true;
-                getall.setChecked(false);
-                no_inventory.setChecked(false);
-            }
+        menuItemInventory = menu.findItem(R.id.menuItemInventory);
+        View getinventory = MenuItemCompat.getActionView(menuItemInventory);
+        getinventory.setOnClickListener(view -> {
+            searchState = new HttpRequest.ItemState();
+            searchState.correct = true;
+            CompoundButton checkAllItem = (CompoundButton) getAllItem.getActionView();
+            CompoundButton checkNoInventor = (CompoundButton) menuItemNoInventory.getActionView();
+            checkAllItem.setChecked(false);
+            checkNoInventor.setChecked(false);
             clearAndReloadItems();
         });
 
-        no_inventory.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (no_inventory.isChecked()) {
-                searchState = new HttpRequest.ItemState();
-                searchState.correct = false;
-                getall.setChecked(false);
-                inventory.setChecked(false);
-            }
+        menuItemNoInventory = menu.findItem(R.id.menuItemNoInventory);
+        View noInventory = MenuItemCompat.getActionView(menuItemNoInventory);
+        noInventory.setOnClickListener(view -> {
+            searchState = new HttpRequest.ItemState();
+            searchState.correct = false;
+            CompoundButton checkAllItem = (CompoundButton) getAllItem.getActionView();
+            CompoundButton checkInventor = (CompoundButton) menuItemInventory.getActionView();
+            checkAllItem.setChecked(false);
+            checkInventor.setChecked(false);
             clearAndReloadItems();
         });
 
-        showbrrow.setOnClickListener(view -> {
-            Intent intent = new Intent(DataViewActivity.this, ListBorrowerActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        });
 
         //AdapterView 是一個類別 裡面的 interface OnItemClickListener void() 介面
         lv.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -116,9 +127,6 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         lv.setAdapter(new ItemAdapter(this, searchState));
     }
 
-    void searchLoadAndRefreshItems(String name) {
-//      List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().SearchItem(name);
-    }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -134,11 +142,6 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         return super.onKeyDown(keyCode, event);
     }
 
-    public void startCameraActivity(View v) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
 
     public void openSideBar(View view) {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -147,55 +150,84 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
     public void search(View view) {
         String name = searchField.getText().toString();
-        searchLoadAndRefreshItems(name);
-        clearAndReloadItems();//清掉
+        ItemAdapter adapter = new ItemAdapter(this, name);
+        lv.setAdapter(adapter);
     }
 
     static class ItemAdapter extends BaseAdapter {
         protected final List<HttpRequest.ItemInfo> list = new ArrayList<>();
-        protected final int loadThreshold;
-        protected final int limit = 20;
-        protected final HttpRequest.ItemState searchState;
-        protected final Activity activity;
+        protected int loadThreshold;
+        protected final int limit = 10;
+        protected HttpRequest.ItemState searchState;
+        protected Activity activity;
         protected boolean done = false;
-        int times = 0;
-        int innerTimes = 0;
+        protected int length = 0;
+        protected String name;
+
+        private boolean lock = false;
+
+        ItemAdapter(Activity activity, String name) {//this , bolled
+            this(activity, 20);
+            this.name = name;
+        }
 
         ItemAdapter(Activity activity, HttpRequest.ItemState searchState) {
-            this(activity, searchState, 20);
+            this(activity, 20);
+            this.searchState = searchState;
         }
 
-        ItemAdapter(Activity activity, HttpRequest.ItemState searchState, int loadThreshold) {
-            this.searchState = searchState;
+        protected ItemAdapter(Activity activity, int loadThreshold) {//第二步放入全域變數
             this.loadThreshold = loadThreshold;
             this.activity = activity;
-            loadItems();
+            _loadItems();
         }
 
-        void loadItems() {
-            Log.d("loadItems Times", (times += 1) + "");
+        protected void markLoadFinish() {
+            done = true;
+        }
 
+        protected List<HttpRequest.ItemInfo> loadItems(int offset) {
+            try {
+                List<HttpRequest.ItemInfo> result;
+                if (this.name != null) {
+                    result = HttpRequest.getInstance().SearchItem(this.name);
+                    markLoadFinish();
+                } else {
+                    result = HttpRequest.getInstance().GetItem(limit, offset, searchState);
+                }
+                Log.i("result.size()", result.size() + " this.list.size()= " + this.list.size() + "");
+                return result;
+            } catch (IOException | JSONException e) {//InterruptedException
+                e.printStackTrace();
+            } catch (HttpRequest.GetDataError getDataError) {
+                markLoadFinish();
+            }
+            return null;
+        }
+
+        private void _loadItems() {
+            if (done || lock) {
+                return;
+            }
+            synchronized (this) {
+                if (lock) {
+                    return;
+                } else {
+                    lock = true;
+                }
+            }
             new Thread(() -> {
-                synchronized (ItemAdapter.this) {
-                    if (done) {
-                        return;
-                    }
-                    Log.d("loadItems Thread Times", (innerTimes += 1) + "");
-                    try {
-                        List<HttpRequest.ItemInfo> result = HttpRequest.getInstance().GetItem(limit, this.list.size(), searchState);
-                        if (result.size() == 0) {
-                            done = true;
-                        } else {
-                            activity.runOnUiThread(() -> {
-                                this.list.addAll(result);
-                                notifyDataSetChanged();
-                            });
-                        }
-                    } catch (IOException | JSONException e) {
-                        e.printStackTrace();
-                    } catch (HttpRequest.GetDataError getDataError) {
-                        done = true;
-                    }
+                List<HttpRequest.ItemInfo> result = loadItems(length);
+                length = length + result.size();
+                if (result.size() == 0) {
+                    done = true;
+                    lock = false;
+                } else {
+                    activity.runOnUiThread(() -> {
+                        this.list.addAll(result);
+                        notifyDataSetChanged();
+                        lock = false;
+                    });
                 }
             }).start();
         }
@@ -221,10 +253,11 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());//初始一個背後 layout畫板
                 view = inflater.inflate(R.layout.list_item, null);
             }
-            if (!done && i + this.loadThreshold > this.list.size()) {
-                this.loadItems();
+            if (!done && i + this.loadThreshold > limit) {
+                Log.i("title", "i: " + i + "  this.loadThreshold:" + this.loadThreshold + "" + "  i+this.loadThreshold: " + (i + this.loadThreshold) + " limit" + limit + "");
+                this._loadItems();
             }
-            HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) this.getItem(i);//?
+            HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) this.getItem(i);
 
             TextView item_name = view.findViewById(R.id.item_name);
             TextView item_status = view.findViewById(R.id.item_status);
