@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item android:title="輸入資料">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/itemcamera"
+                        android:icon="@drawable/ic_menu_camera"
+                        android:title="檢測相機" />
+
+                </group>
+            </menu>
+        </item>
+
+        <item android:title="搜尋條件篩選">
+            <menu>
+                <group android:checkableBehavior="single">
+
+                    <item
+                        android:id="@+id/getAllItem"
+                        app:actionViewClass="android.widget.CheckBox"
+                        android:title="全部" />
+
+                    <item
+                        android:id="@+id/menuItemInventory"
+                        app:actionViewClass="android.widget.CheckBox"
+                        android:title="已盤點" />
+                    <item
+                        android:id="@+id/menuItemNoInventory"
+                        app:actionViewClass="android.widget.CheckBox"
+                        android:title="未盤點" />
+                    <item
+                        android:id="@+id/conform"
+                        app:actionViewClass="android.widget.CheckBox"
+                        android:title="符合" />
+                    <item
+                        android:id="@+id/scrapped"
+                        app:actionViewClass="android.widget.CheckBox"
+                        android:title="報廢" />
+                    <item
+                        android:id="@+id/fix"
+                        app:actionViewClass="android.widget.CheckBox"
+                        android:title="送修" />//
+                    <item
+                        android:id="@+id/notposted"
+                        app:actionViewClass="android.widget.CheckBox"
+                        android:title="標籤未貼" />
+                </group>
+            </menu>
+        </item>
+
+        <item android:title="借出功能">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/aboutBrrower"
+                        android:icon="@drawable/accountadd"
+                        android:title="關於借出清單" />
+
+                </group>
+            </menu>
+        </item>
+
+    </group>
+</menu>

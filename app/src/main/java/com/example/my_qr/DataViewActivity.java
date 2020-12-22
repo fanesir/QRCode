@@ -4,27 +4,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.my_qr.ExtentBaseAdpter.LoadData;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,12 +31,40 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 
 public class DataViewActivity extends AppCompatActivity { //登入成功的地方
-    List<HttpRequest.ItemInfo> list;
     ListView lv;
     HttpRequest.ItemState searchState;
-    HttpRequest.ItemInfo itemInfo;
     EditText searchField;
     MenuItem getAllItem, menuItemInventory, menuItemNoInventory;
+
+    LoadData<HttpRequest.ItemInfo> loadItem = new LoadData<HttpRequest.ItemInfo>() {
+        @Override
+        public ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> load(int offset) {
+            try {
+                ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
+                state.result = HttpRequest.getInstance().GetItem(20, offset, searchState);
+                state.has_next = true;
+                return state;
+            } catch (IOException | JSONException | HttpRequest.GetDataError e) {//InterruptedException
+                e.printStackTrace();
+            }
+            return null;
+        }
+    };
+
+    LoadData<HttpRequest.ItemInfo> searchName = new LoadData<HttpRequest.ItemInfo>() {
+        @Override
+        public ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> load(int offset) {
+            try {
+                ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
+                state.result = HttpRequest.getInstance().SearchItem(DataViewActivity.this.searchField.getText().toString());
+                state.has_next = false;
+                return state;
+            } catch (IOException | JSONException | HttpRequest.GetDataError e) {//InterruptedException
+                e.printStackTrace();
+            }
+            return null;
+        }
+    };
 
 
     @Override
@@ -47,7 +72,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_view);
 
-        ItemAdapter adapter = new ItemAdapter(this, searchState);
+        ItemAdapter adapter = new ItemAdapter(this, loadItem);
         lv = findViewById(R.id.lv);
 
         lv.setAdapter(adapter);
@@ -124,7 +149,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     }
 
     void clearAndReloadItems() {
-        lv.setAdapter(new ItemAdapter(this, searchState));
+        lv.setAdapter(new ItemAdapter(this, loadItem));//當有條件搜尋時就會刷新的物件進去
     }
 
 
@@ -149,102 +174,15 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     }
 
     public void search(View view) {
-        String name = searchField.getText().toString();
-        ItemAdapter adapter = new ItemAdapter(this, name);
+
+        ItemAdapter adapter = new ItemAdapter(this, searchName);
         lv.setAdapter(adapter);
     }
 
-    static class ItemAdapter extends BaseAdapter {
-        protected final List<HttpRequest.ItemInfo> list = new ArrayList<>();
-        protected int loadThreshold;
-        protected final int limit = 10;
-        protected HttpRequest.ItemState searchState;
-        protected Activity activity;
-        protected boolean done = false;
-        protected int length = 0;
-        protected String name;
+    static class ItemAdapter extends ExtentBaseAdpter<HttpRequest.ItemInfo> {
 
-        private boolean lock = false;
-
-        ItemAdapter(Activity activity, String name) {//this , bolled
-            this(activity, 20);
-            this.name = name;
-        }
-
-        ItemAdapter(Activity activity, HttpRequest.ItemState searchState) {
-            this(activity, 20);
-            this.searchState = searchState;
-        }
-
-        protected ItemAdapter(Activity activity, int loadThreshold) {//第二步放入全域變數
-            this.loadThreshold = loadThreshold;
-            this.activity = activity;
-            _loadItems();
-        }
-
-        protected void markLoadFinish() {
-            done = true;
-        }
-
-        protected List<HttpRequest.ItemInfo> loadItems(int offset) {
-            try {
-                List<HttpRequest.ItemInfo> result;
-                if (this.name != null) {
-                    result = HttpRequest.getInstance().SearchItem(this.name);
-                    markLoadFinish();
-                } else {
-                    result = HttpRequest.getInstance().GetItem(limit, offset, searchState);
-                }
-                Log.i("result.size()", result.size() + " this.list.size()= " + this.list.size() + "");
-                return result;
-            } catch (IOException | JSONException e) {//InterruptedException
-                e.printStackTrace();
-            } catch (HttpRequest.GetDataError getDataError) {
-                markLoadFinish();
-            }
-            return null;
-        }
-
-        private void _loadItems() {
-            if (done || lock) {
-                return;
-            }
-            synchronized (this) {
-                if (lock) {
-                    return;
-                } else {
-                    lock = true;
-                }
-            }
-            new Thread(() -> {
-                List<HttpRequest.ItemInfo> result = loadItems(length);
-                length = length + result.size();
-                if (result.size() == 0) {
-                    done = true;
-                    lock = false;
-                } else {
-                    activity.runOnUiThread(() -> {
-                        this.list.addAll(result);
-                        notifyDataSetChanged();
-                        lock = false;
-                    });
-                }
-            }).start();
-        }
-
-        @Override
-        public int getCount() {
-            return this.list.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return this.list.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
+        protected ItemAdapter(Activity activity, LoadData<HttpRequest.ItemInfo> callback) {
+            super(activity, callback);
         }
 
         @Override
@@ -253,16 +191,14 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());//初始一個背後 layout畫板
                 view = inflater.inflate(R.layout.list_item, null);
             }
-            if (!done && i + this.loadThreshold > limit) {
-                Log.i("title", "i: " + i + "  this.loadThreshold:" + this.loadThreshold + "" + "  i+this.loadThreshold: " + (i + this.loadThreshold) + " limit" + limit + "");
-                this._loadItems();
+            if (!done && i + 5 > this.data.size()) {
+                this.loadItems();
             }
             HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) this.getItem(i);
 
             TextView item_name = view.findViewById(R.id.item_name);
             TextView item_status = view.findViewById(R.id.item_status);
             TextView item_local = view.findViewById(R.id.localitem);
-
 
             item_name.setText(info.name);
             item_local.setText(info.location);

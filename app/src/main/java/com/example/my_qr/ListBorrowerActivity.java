@@ -1,8 +1,9 @@
 package com.example.my_qr;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.TypedValue;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,9 +24,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class ListBorrowerActivity extends AppCompatActivity {
 
-    ListView borrowerListView, lvShowAccountRecordItem;
-    List<HttpRequest.BorrowerInfo> list_view_data = new LinkedList<>();
-    List<HttpRequest.BorrowRecord> borrowRecordData = new LinkedList<>();
+    ListView lvBorrowerAccount, lvShowAccountRecordItem;
+    HttpRequest.BorrowerInfo borrowerInfo;
+    List<HttpRequest.BorrowerInfo> brrowAccountData = new LinkedList<>();
+    List<HttpRequest.BorrowRecord> borrowAccountRecordData = new LinkedList<>();
     HttpRequest.BorrowerInfo getBorrowerInfo;
     int accountId;
     List<HttpRequest.ItemInfo> itemInfos = new LinkedList<>();
@@ -38,15 +41,13 @@ public class ListBorrowerActivity extends AppCompatActivity {
         ImageButton imageButton = findViewById(R.id.imageButton);
         imageButton.setVisibility(View.INVISIBLE);
 
-        borrowerListView = findViewById(R.id.showbrrowlisst);
+        lvBorrowerAccount = findViewById(R.id.showbrrowlisst);
         SwipeRefreshLayout brswipLayout = findViewById(R.id.brswipLayout);
-        BorrowerListAdapter adapter = new BorrowerListAdapter(list_view_data);
 
-
-        borrowerListView.setAdapter(adapter);
+        lvBorrowerAccount.setAdapter(new ItemAdapter(ListBorrowerActivity.this, borrowerInfo));
 
         lvShowAccountRecordItem = findViewById(R.id.borrow_record_list_view);
-        showThisAccountItemAdapter recordItemAdapter = new showThisAccountItemAdapter(borrowRecordData);
+        showThisAccountItemAdapter recordItemAdapter = new showThisAccountItemAdapter(borrowAccountRecordData);
         lvShowAccountRecordItem.setAdapter(recordItemAdapter);
 
 
@@ -65,8 +66,8 @@ public class ListBorrowerActivity extends AppCompatActivity {
         });
 
 
-        borrowerListView.setOnItemLongClickListener((adapterView, view, i, l) -> {//長按編輯
-            BorrowerListAdapter borrowerListAdapter = (BorrowerListAdapter) adapterView.getAdapter();//getAdapter 方法
+        lvBorrowerAccount.setOnItemLongClickListener((adapterView, view, i, l) -> {//長按編輯
+            ItemAdapter borrowerListAdapter = (ItemAdapter) adapterView.getAdapter();//getAdapter 方法
             HttpRequest.BorrowerInfo getBorrowerInfo = (HttpRequest.BorrowerInfo) borrowerListAdapter.getItem(i);
             Intent intent = new Intent(ListBorrowerActivity.this, UpdataBrrowContent.class);
             intent.putExtra("Brrow", getBorrowerInfo);
@@ -75,14 +76,14 @@ public class ListBorrowerActivity extends AppCompatActivity {
             return false;
         });
 
-        borrowerListView.setOnItemClickListener((adapterView, view, i, l) -> {//短按顯示此借出人借過的物品
-            BorrowerListAdapter borrowerListAdapter = (BorrowerListAdapter) adapterView.getAdapter();//getAdapter 方法
+        lvBorrowerAccount.setOnItemClickListener((adapterView, view, i, l) -> {//短按顯示此借出人借過的物品
+            ItemAdapter borrowerListAdapter = (ItemAdapter) adapterView.getAdapter();//getAdapter 方法
             getBorrowerInfo = (HttpRequest.BorrowerInfo) borrowerListAdapter.getItem(i);
 
             imageButton.setVisibility(View.VISIBLE);
             showBrrowNameTextview.setText("" + getBorrowerInfo.name);
             accountId = getBorrowerInfo.id;
-            borrowRecordData.clear();
+            borrowAccountRecordData.clear();
             loadBrrowerAccountData(20);
         });
 
@@ -92,14 +93,14 @@ public class ListBorrowerActivity extends AppCompatActivity {
         Thread thread = new Thread(() -> {
             try {
                 List<HttpRequest.BorrowerInfo> result = null;
-                result = HttpRequest.getInstance().GetBorrower(limit, list_view_data.size());
+                result = HttpRequest.getInstance().GetBorrower(limit, brrowAccountData.size());
                 List<HttpRequest.BorrowerInfo> finalResult = result;
                 runOnUiThread(() -> {
                     if (limit != 0) {
-                        list_view_data.addAll(finalResult);
+                        brrowAccountData.addAll(finalResult);
                     }
-                    synchronized (borrowerListView.getAdapter()) {
-                        ((BaseAdapter) borrowerListView.getAdapter()).notifyDataSetChanged();//notify....更新刷新
+                    synchronized (lvBorrowerAccount.getAdapter()) {
+                        ((BaseAdapter) lvBorrowerAccount.getAdapter()).notifyDataSetChanged();//notify....更新刷新
                     }
                 });
             } catch (IOException | JSONException | HttpRequest.GetDataError e) {
@@ -111,11 +112,82 @@ public class ListBorrowerActivity extends AppCompatActivity {
     }
 
 
-    static class BorrowerListAdapter extends BaseAdapter {
-        private final List<HttpRequest.BorrowerInfo> list;
+    static class ItemAdapter extends BaseAdapter {
+        protected final List<HttpRequest.BorrowerInfo> list = new ArrayList<>();
+        protected int loadThreshold;
+        protected final int limit = 10;
+        protected HttpRequest.BorrowerInfo searchState;
+        protected Activity activity;
+        protected boolean done = false;
+        protected int length = 0;
+        protected String name;
 
-        public BorrowerListAdapter(List<HttpRequest.BorrowerInfo> lList) {
-            this.list = lList;
+
+        private boolean lock = false;
+
+        ItemAdapter(Activity activity, String name) {//search
+            this(activity, 20);
+            this.name = name;
+        }
+
+
+        ItemAdapter(Activity activity, HttpRequest.BorrowerInfo searchState) {//條件篩選
+            this(activity, 20);
+            this.searchState = searchState;
+        }
+
+        protected ItemAdapter(Activity activity, int loadThreshold) {
+            this.loadThreshold = loadThreshold;
+            this.activity = activity;
+            _loadItems();
+        }
+
+
+        protected void markLoadFinish() {
+            done = true;
+        }
+
+        protected List<HttpRequest.BorrowerInfo> loadItems(int offset) {
+            try {
+                List<HttpRequest.BorrowerInfo> result = null;
+                //markLoadFinish();
+                result = HttpRequest.getInstance().GetBorrower(limit, offset);
+
+                Log.i("result.size()", result.size() + " this.list.size()= " + this.list.size() + "");
+                return result;
+            } catch (IOException | JSONException e) {//InterruptedException
+                e.printStackTrace();
+            } catch (HttpRequest.GetDataError getDataError) {
+                markLoadFinish();
+            }
+            return null;
+        }
+
+        private void _loadItems() {
+            if (done || lock) {
+                return;
+            }
+            synchronized (this) {
+                if (lock) {
+                    return;
+                } else {
+                    lock = true;
+                }
+            }
+            new Thread(() -> {
+                List<HttpRequest.BorrowerInfo> result = loadItems(length);
+                length = length + result.size();
+                if (result.size() == 0) {
+                    done = true;
+                    lock = false;
+                } else {
+                    activity.runOnUiThread(() -> {
+                        this.list.addAll(result);
+                        notifyDataSetChanged();
+                        lock = false;
+                    });
+                }
+            }).start();
         }
 
         @Override
@@ -136,8 +208,12 @@ public class ListBorrowerActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (view == null) {
-                LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
-                view = layoutInflater.inflate(R.layout.list_item, null);
+                LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());//初始一個背後 layout畫板
+                view = inflater.inflate(R.layout.list_item, null);
+            }
+            if (!done && i + this.loadThreshold > limit) {
+                Log.i("title", "i: " + i + "  this.loadThreshold:" + this.loadThreshold + "" + "  i+this.loadThreshold: " + (i + this.loadThreshold) + " limit" + limit + "");
+                this._loadItems();
             }
             HttpRequest.BorrowerInfo info = (HttpRequest.BorrowerInfo) this.getItem(i);
 
@@ -145,11 +221,9 @@ public class ListBorrowerActivity extends AppCompatActivity {
             TextView item_status = view.findViewById(R.id.item_status);
             TextView item_local = view.findViewById(R.id.localitem);
 
-            item_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            item_status.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            item_status.setText("");
             item_name.setText(info.name);
-            item_local.setText("");
-            item_status.setText(info.phone_number);
+            item_local.setText(info.phone_number);
 
             return view;
         }
@@ -171,7 +245,7 @@ public class ListBorrowerActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     if (limit != 0) {
-                        borrowRecordData.add(result);
+                        borrowAccountRecordData.add(result);
                     }
                     synchronized (lvShowAccountRecordItem.getAdapter()) {
                         ((BaseAdapter) lvShowAccountRecordItem.getAdapter()).notifyDataSetChanged();
