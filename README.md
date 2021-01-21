@@ -1,7 +1,7 @@
 # QR Code 盤點系統
 #### 注意!此盤點系統後台使用Json資料庫，目前只開方校內使用，因此尚未開通外網，請見諒 。
 
-#### 1.系統首頁功能
+### 1.系統首頁功能
 ![This is a alt text.](/image/QR1.png "This is a sample image.")
  
 👆 有財產名稱、有設備位置、盤點情況。
@@ -18,7 +18,7 @@
  
 👆按下"確認送出"按鈕之後，並二次選擇"深度學習超級運算伺服器"選項更新了備註。
  
-#### 2.表單選項
+### 2.表單選項
 ![This is a alt text.](/image/QR2.png "This is a sample image.")
 
 👆 點選左邊，有個表單可使用 QR_CODE盤點相機、財產搜尋篩選條件、借出清單。
@@ -39,12 +39,12 @@
 
 👆符合未盤點財產。
  
-#### 3.檢測相機
+### 3.檢測相機
 ![This is a alt text.](/image/QR14.png "This is a sample image.")
  
 👆使用手機相機盤點到財產時，即可將此財產資訊顯示出來並自動勾選"符合"選項
  
- #### 4.借出功能
+ ### 4.借出功能
  
 ![This is a alt text.](/image/QR10.png "This is a sample image.")
 
