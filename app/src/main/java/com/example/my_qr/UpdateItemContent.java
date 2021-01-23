@@ -2,7 +2,6 @@ package com.example.my_qr;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -51,7 +50,6 @@ public class UpdateItemContent extends AppCompatActivity {
         Title.setText(String.format("%s\n%s", getString(R.string.item_id), item_info.item_id));
         id.setText(item_info.name);
         note.setText(item_info.note);
-        Log.i("我的id", item_info.item_id);
     }
 
     public void submitData(View v) {
@@ -63,6 +61,7 @@ public class UpdateItemContent extends AppCompatActivity {
                 HttpRequest.getInstance().UpdateItem(item_info.item_id, location, note, null);
                 updateItemState();
                 runOnUiThread(() -> Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(this,DataViewActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             } catch (HttpRequest.UpdateDataError e) {

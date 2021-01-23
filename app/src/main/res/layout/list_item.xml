@@ -11,8 +11,8 @@
         android:id="@+id/item_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="status"
-
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,18 +23,19 @@
         android:layout_height="wrap_content"
         android:text="name"
         android:textAllCaps="false"
-        android:textSize="15sp"
-        android:textStyle="bold"
+        android:textColor="#090000"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/localitem"
-        android:textSize="15sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        app:layout_constraintEnd_toStartOf="@+id/item_status"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

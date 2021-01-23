@@ -21,33 +21,29 @@
 
                     <item
                         android:id="@+id/getAllItem"
-                        app:actionViewClass="android.widget.CheckBox"
-                        android:title="全部" />
+                        android:title="全部"
+                        app:actionViewClass="android.widget.CheckBox" />
 
                     <item
                         android:id="@+id/menuItemInventory"
-                        app:actionViewClass="android.widget.CheckBox"
-                        android:title="已盤點" />
+                        android:title="已盤點"
+                        app:actionViewClass="android.widget.CheckBox" />
                     <item
                         android:id="@+id/menuItemNoInventory"
-                        app:actionViewClass="android.widget.CheckBox"
-                        android:title="未盤點" />
-                    <item
-                        android:id="@+id/conform"
-                        app:actionViewClass="android.widget.CheckBox"
-                        android:title="符合" />
+                        android:title="未盤點"
+                        app:actionViewClass="android.widget.CheckBox" />
                     <item
                         android:id="@+id/scrapped"
-                        app:actionViewClass="android.widget.CheckBox"
-                        android:title="報廢" />
+                        android:title="報廢"
+                        app:actionViewClass="android.widget.CheckBox" />
                     <item
                         android:id="@+id/fix"
-                        app:actionViewClass="android.widget.CheckBox"
-                        android:title="送修" />//
+                        android:title="送修"
+                        app:actionViewClass="android.widget.CheckBox" />
                     <item
                         android:id="@+id/notposted"
-                        app:actionViewClass="android.widget.CheckBox"
-                        android:title="標籤未貼" />
+                        android:title="標籤未貼"
+                        app:actionViewClass="android.widget.CheckBox" />
                 </group>
             </menu>
         </item>
@@ -63,6 +59,7 @@
                 </group>
             </menu>
         </item>
+
 
     </group>
 </menu>

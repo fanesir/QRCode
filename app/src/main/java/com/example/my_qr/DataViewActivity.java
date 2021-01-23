@@ -34,7 +34,9 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     ListView lv;
     HttpRequest.ItemState searchState;
     EditText searchField;
-    MenuItem getAllItem, menuItemInventory, menuItemNoInventory;
+    MenuItem getAllItem, menuItemInventory, menuItemNoInventory, discard, fixIng, unlabel;
+    Boolean correctboolean;
+
 
     LoadData<HttpRequest.ItemInfo> loadItem = new LoadData<HttpRequest.ItemInfo>() {
         @Override
@@ -51,19 +53,17 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         }
     };
 
-    LoadData<HttpRequest.ItemInfo> searchName = new LoadData<HttpRequest.ItemInfo>() {
-        @Override
-        public ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> load(int offset) {
-            try {
-                ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
-                state.result = HttpRequest.getInstance().SearchItem(DataViewActivity.this.searchField.getText().toString());
-                state.has_next = false;
-                return state;
-            } catch (IOException | JSONException | HttpRequest.GetDataError e) {//InterruptedException
-                e.printStackTrace();
-            }
-            return null;
+
+    LoadData<HttpRequest.ItemInfo> searchName = offset -> {
+        try {
+            ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
+            state.result = HttpRequest.getInstance().SearchItem(DataViewActivity.this.searchField.getText().toString());
+            state.has_next = false;
+            return state;
+        } catch (IOException | JSONException | HttpRequest.GetDataError e) {//InterruptedException
+            e.printStackTrace();
         }
+        return null;
     };
 
 
@@ -71,11 +71,8 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_view);
-
-        ItemAdapter adapter = new ItemAdapter(this, loadItem);
         lv = findViewById(R.id.lv);
-
-        lv.setAdapter(adapter);
+        lv.setAdapter(new ItemAdapter(this, loadItem));
         searchField = findViewById(R.id.item_search_field);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -100,6 +97,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         View getAllactionView = MenuItemCompat.getActionView(getAllItem);
         getAllactionView.setOnClickListener(view -> {
             searchState = null;
+            select(null, false, false, false, false);
             CompoundButton checkInventor = (CompoundButton) menuItemInventory.getActionView();//CompoundButton
             CompoundButton checkNoInventor = (CompoundButton) menuItemNoInventory.getActionView();
             checkInventor.setChecked(false);
@@ -111,37 +109,62 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         View getinventory = MenuItemCompat.getActionView(menuItemInventory);
         getinventory.setOnClickListener(view -> {
             searchState = new HttpRequest.ItemState();
-            searchState.correct = true;
+            select(searchState, true, false, false, false);
+            correctboolean = true;
             CompoundButton checkAllItem = (CompoundButton) getAllItem.getActionView();
             CompoundButton checkNoInventor = (CompoundButton) menuItemNoInventory.getActionView();
             checkAllItem.setChecked(false);
             checkNoInventor.setChecked(false);
-            clearAndReloadItems();
+
         });
 
         menuItemNoInventory = menu.findItem(R.id.menuItemNoInventory);
         View noInventory = MenuItemCompat.getActionView(menuItemNoInventory);
         noInventory.setOnClickListener(view -> {
             searchState = new HttpRequest.ItemState();
-            searchState.correct = false;
+            select(searchState, false, false, false, false);
+            correctboolean = false;
             CompoundButton checkAllItem = (CompoundButton) getAllItem.getActionView();
             CompoundButton checkInventor = (CompoundButton) menuItemInventory.getActionView();
             checkAllItem.setChecked(false);
             checkInventor.setChecked(false);
-            clearAndReloadItems();
+
+        });
+        discard = menu.findItem(R.id.scrapped);
+        View discardView = MenuItemCompat.getActionView(discard);
+        discardView.setOnClickListener(view -> {
+            select(searchState, correctboolean, true, false, false);
+            CompoundButton checkAllItem = (CompoundButton) fixIng.getActionView();
+            CompoundButton checkInventor = (CompoundButton) unlabel.getActionView();
+            checkAllItem.setChecked(false);
+            checkInventor.setChecked(false);
+        });
+        fixIng = menu.findItem(R.id.fix);
+        View fixIngView = MenuItemCompat.getActionView(fixIng);
+        fixIngView.setOnClickListener(view -> {
+            select(searchState, correctboolean, false, true, false);
+            CompoundButton checkAllItem = (CompoundButton) discard.getActionView();
+            CompoundButton checkInventor = (CompoundButton) unlabel.getActionView();
+            checkAllItem.setChecked(false);
+            checkInventor.setChecked(false);
         });
 
+        unlabel = menu.findItem(R.id.notposted);
+        View unlabelView = MenuItemCompat.getActionView(unlabel);
+        unlabelView.setOnClickListener(view -> {
+            select(searchState, correctboolean, false, false, true);
+            CompoundButton checkAllItem = (CompoundButton) discard.getActionView();
+            CompoundButton checkInventor = (CompoundButton) fixIng.getActionView();
+            checkAllItem.setChecked(false);
+            checkInventor.setChecked(false);
+        });
 
-        //AdapterView 是一個類別 裡面的 interface OnItemClickListener void() 介面
         lv.setOnItemClickListener((adapterView, view, i, l) -> {
             ItemAdapter itemAdapter = (ItemAdapter) adapterView.getAdapter();
             HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) itemAdapter.getItem(i);//第幾個並把資料帶過去
 
-            Toast.makeText(DataViewActivity.this, "選取修改:" + info.name, Toast.LENGTH_LONG).show();
-
             Intent intent = new Intent(DataViewActivity.this, UpdateItemContent.class);
             intent.putExtra("item_info", info);
-
             startActivity(intent);
         });
 
@@ -152,6 +175,29 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         lv.setAdapter(new ItemAdapter(this, loadItem));//當有條件搜尋時就會刷新的物件進去
     }
 
+    public void select(HttpRequest.ItemState searchState, Boolean correct, Boolean discard, Boolean fixIng, Boolean unlabel) {
+        if (searchState == null) {
+            Toast.makeText(this, "尚未選擇盤點狀況", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        searchState.correct = correct;
+        searchState.discard = discard;
+        searchState.fixing = fixIng;
+        searchState.unlabel = unlabel;
+        LoadData<HttpRequest.ItemInfo> loadItem = offset -> {
+            try {
+                ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
+                state.result = HttpRequest.getInstance().GetItem(20, offset, searchState);
+                state.has_next = true;
+                return state;
+            } catch (IOException | JSONException | HttpRequest.GetDataError e) {//InterruptedException
+                e.printStackTrace();
+            }
+            return null;
+        };
+        lv.setAdapter(new ItemAdapter(this, loadItem));
+
+    }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -174,10 +220,10 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     }
 
     public void search(View view) {
-
         ItemAdapter adapter = new ItemAdapter(this, searchName);
         lv.setAdapter(adapter);
     }
+
 
     static class ItemAdapter extends ExtentBaseAdpter<HttpRequest.ItemInfo> {
 

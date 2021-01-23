@@ -17,7 +17,7 @@ public abstract class ExtentBaseAdpter<T> extends BaseAdapter implements Seriali
     protected LoadData<T> callback;
 
     interface LoadData<T> {
-        LoadState<T> load(int offset);//強制一個LoadData
+        LoadState<T> load(int offset);
     }
 
     static class LoadState<T> {
@@ -27,7 +27,7 @@ public abstract class ExtentBaseAdpter<T> extends BaseAdapter implements Seriali
 
     protected ExtentBaseAdpter(Activity activity, LoadData<T> callback) {
         this.activity = activity;
-        this.callback = callback;
+        this.callback = callback;//另一個類別進來的資料
         loadItems();
     }
 

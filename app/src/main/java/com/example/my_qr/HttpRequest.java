@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,9 +49,8 @@ public class HttpRequest {
 
     static class UpdateDataError extends DataError {
     }
-
     private HttpRequest() {
-        this.client = new OkHttpClient.Builder()
+        client = new OkHttpClient.Builder()//登入帳號使用
                 .cookieJar(new CookieJar() {
                     List<Cookie> list = new ArrayList<>();
 
@@ -81,6 +79,7 @@ public class HttpRequest {
                 .scheme(PROTOCOL)
                 .host(HOST)
                 .port(PORT);
+
     }
 
     private HttpUrl.Builder processPath(HttpUrl.Builder builder, String path) {
@@ -90,14 +89,15 @@ public class HttpRequest {
         return builder;
     }
 
-    private Request.Builder Send(String path) throws MalformedURLException {
+    private Request.Builder Send(String path) {//"http"192.168.1.18/4000 /api/item etc...
         return new Request.Builder()
                 .url(this.processPath(this.makeURL(), path).build());
+
     }
 
     public Response Post(String path, RequestBody body) throws IOException {
-        Request request = this.Send(path)
-                .post(body)
+        Request request = this.Send(path)//把//api/item 等等放入
+                .post(body)//輸入的資料
                 .build();
         return client.newCall(request).execute();
     }
@@ -164,7 +164,7 @@ public class HttpRequest {
         return new ItemInfo(new JSONObject(response.body().string()));
     }
 
-    public List<ItemInfo> GetItem(int limit, int offset, ItemState state) throws IOException, JSONException, GetDataError {
+    public List<ItemInfo> GetItem(int limit, int offset, ItemState state ) throws IOException, JSONException, GetDataError {
         String[][] query;
         if (state == null) {
             query = new String[][]{//Response 請求
@@ -176,7 +176,8 @@ public class HttpRequest {
             query = new String[][]{//Response 請求
                     {"limit", Integer.toString(limit)},
                     {"offset", Integer.toString((offset))},
-                    {"state", state.toJson().toString()}
+                    {"state", state.toJson().toString()},
+
             };
         }
 

@@ -171,7 +171,7 @@ public class CameraInputData extends AppCompatActivity {
                 HttpRequest request = HttpRequest.getInstance();
                 HttpRequest.ItemInfo info = request.GetItem(item_id);
                 info.correct = true;
-                this.info = info;
+                this.info = info;//全域info = getinfo
                 updateViewer();
 
                 HttpRequest.ItemState state = new HttpRequest.ItemState();
