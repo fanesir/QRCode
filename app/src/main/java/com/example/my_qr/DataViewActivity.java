@@ -14,7 +14,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.my_qr.ExtentBaseAdpter.LoadData;
 import com.google.android.material.navigation.NavigationView;
@@ -23,6 +22,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -76,20 +76,28 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         searchField = findViewById(R.id.item_search_field);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(menuItem -> {
-            int id = menuItem.getItemId();
-            if (id == R.id.itemcamera) {
-                Intent intent = new Intent(DataViewActivity.this, CameraInputData.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-            if (id == R.id.aboutBrrower) {
-                Intent intent = new Intent(DataViewActivity.this, ListBorrowerActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-            }
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.itemcamera) {
+                    Intent intent = new Intent(DataViewActivity.this, CameraInputData.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    DataViewActivity.this.startActivity(intent);
+                }
+                if (id == R.id.allbrroweraccount) {
+                    Intent intent = new Intent(DataViewActivity.this, ListBorrowerActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    DataViewActivity.this.startActivity(intent);
+                }
 
-            return false;
+                if (id == R.id.addBrrowerAccount) {
+                    Intent intent = new Intent(DataViewActivity.this, NewBorrowerActivity.class);
+                    startActivity(intent);
+                }
+
+                return false;
+            }
         });
 
         Menu menu = navigationView.getMenu();
@@ -102,6 +110,12 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             CompoundButton checkNoInventor = (CompoundButton) menuItemNoInventory.getActionView();
             checkInventor.setChecked(false);
             checkNoInventor.setChecked(false);
+            CompoundButton clreardiscard = (CompoundButton) discard.getActionView();
+            clreardiscard.setChecked(false);
+            CompoundButton clrearunlabel = (CompoundButton) unlabel.getActionView();
+            clrearunlabel.setChecked(false);
+            CompoundButton clrearfixIng = (CompoundButton) fixIng.getActionView();
+            clrearfixIng.setChecked(false);
             clearAndReloadItems();
         });
 
@@ -164,7 +178,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) itemAdapter.getItem(i);//第幾個並把資料帶過去
 
             Intent intent = new Intent(DataViewActivity.this, UpdateItemContent.class);
-            intent.putExtra("item_info", info);
+            intent.putExtra("item_info", info.item_id);//
             startActivity(intent);
         });
 
@@ -177,7 +191,6 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
     public void select(HttpRequest.ItemState searchState, Boolean correct, Boolean discard, Boolean fixIng, Boolean unlabel) {
         if (searchState == null) {
-            Toast.makeText(this, "尚未選擇盤點狀況", Toast.LENGTH_SHORT).show();
             return;
         }
         searchState.correct = correct;
@@ -201,6 +214,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+
             AlertDialog.Builder ad = new AlertDialog.Builder(this);
             ad.setTitle("離開");
             ad.setMessage("離開程式?");

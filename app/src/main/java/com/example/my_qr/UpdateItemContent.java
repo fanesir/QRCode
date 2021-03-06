@@ -17,16 +17,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class UpdateItemContent extends AppCompatActivity {
     EditText location, id, note;
-    HttpRequest.ItemInfo item_info;//型別 變數
+    // HttpRequest.ItemInfo item_info;//型別 變數
     Button submitButton;
+    String item_info;
     CheckBox correct, discard, fixing, unlabel;
+    HttpRequest request = HttpRequest.getInstance();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_updata_content);
+
         location = findViewById(R.id.location);
         id = findViewById(R.id.id);
         note = findViewById(R.id.note);
@@ -38,18 +40,38 @@ public class UpdateItemContent extends AppCompatActivity {
         fixing = findViewById(R.id.fixing);
         unlabel = findViewById(R.id.unlabel);
         Intent intent = UpdateItemContent.this.getIntent();
-        item_info = (HttpRequest.ItemInfo) intent.getSerializableExtra("item_info");
+        item_info = intent.getStringExtra("item_info");
 
-        assert item_info != null;
-        correct.setChecked(item_info.correct);
-        discard.setChecked(item_info.discard);
-        fixing.setChecked(item_info.fixing);
-        unlabel.setChecked(item_info.unlabel);
-        location.setText(item_info.location);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    runOnUiThread(new Runnable() {
+                        HttpRequest.ItemInfo info = request.GetItem(item_info + "");
 
-        Title.setText(String.format("%s\n%s", getString(R.string.item_id), item_info.item_id));
-        id.setText(item_info.name);
-        note.setText(item_info.note);
+                        @Override
+                        public void run() {
+                            assert info != null;
+                            correct.setChecked(info.correct);
+                            discard.setChecked(info.discard);
+                            fixing.setChecked(info.fixing);
+                            unlabel.setChecked(info.unlabel);
+                            location.setText(info.location);
+                            Title.setText(String.format("%s\n%s", getString(R.string.item_id), item_info));
+                            id.setText(info.name);
+                            note.setText(info.note);
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (HttpRequest.GetDataError getDataError) {
+                    getDataError.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     public void submitData(View v) {
@@ -58,10 +80,11 @@ public class UpdateItemContent extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                HttpRequest.getInstance().UpdateItem(item_info.item_id, location, note, null);
+                HttpRequest.getInstance().UpdateItem(item_info, location, note, null);
                 updateItemState();
                 runOnUiThread(() -> Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show());
-                startActivity(new Intent(this,DataViewActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                startActivity(new Intent(this, DataViewActivity.class));
+//                finish();
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             } catch (HttpRequest.UpdateDataError e) {
@@ -79,7 +102,7 @@ public class UpdateItemContent extends AppCompatActivity {
                 state.fixing = fixing.isChecked();
                 state.discard = discard.isChecked();
                 state.unlabel = unlabel.isChecked();
-                HttpRequest.getInstance().UpdateItem(item_info.item_id, null, null, state);
+                HttpRequest.getInstance().UpdateItem(item_info, null, null, state);
 
             } catch (IOException | JSONException e) {
                 e.printStackTrace();

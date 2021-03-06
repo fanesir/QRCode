@@ -49,6 +49,7 @@ public class HttpRequest {
 
     static class UpdateDataError extends DataError {
     }
+
     private HttpRequest() {
         client = new OkHttpClient.Builder()//登入帳號使用
                 .cookieJar(new CookieJar() {
@@ -216,7 +217,7 @@ public class HttpRequest {
     }
 
     //出借
-    public void CreateBorrower(String name, String phone_number) throws JSONException, IOException, SignUpError {
+    public BorrowerInfo CreateBorrower(String name, String phone_number) throws JSONException, IOException, SignUpError {
         JSONObject object = new JSONObject();
 
         object.put("name", name);
@@ -229,6 +230,8 @@ public class HttpRequest {
             Log.d("HttpError", response.body().string());
             throw new SignUpError();
         }
+        return new BorrowerInfo(new JSONObject(response.body().string()));
+
     }
 
     //增加此借出人清單

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -30,7 +29,7 @@ public class AddThisAccountWantBorrowerctivity extends AppCompatActivity {
     DatePickerDialog datePickerDialog;
     TimePickerDialog timePickerDialog;
     String forJsonEndTime, sDate, sTime;
-    TimePicker tp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

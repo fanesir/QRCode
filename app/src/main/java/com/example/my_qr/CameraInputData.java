@@ -164,35 +164,40 @@ public class CameraInputData extends AppCompatActivity {
     }
 
     public void getAndUpdateItem(String item_id) {//pro
-        new Thread(() -> {
-            try {
-                runOnUiThread(() -> updateButton.setVisibility(View.VISIBLE));//改由ui的執行序來執行
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    CameraInputData.this.runOnUiThread(() -> {
+                        updateButton.setVisibility(View.VISIBLE);
+                    });//改由ui的執行序來執行
 
-                HttpRequest request = HttpRequest.getInstance();
-                HttpRequest.ItemInfo info = request.GetItem(item_id);
-                info.correct = true;
-                this.info = info;//全域info = getinfo
-                updateViewer();
+                    HttpRequest request = HttpRequest.getInstance();
+                    HttpRequest.ItemInfo info = request.GetItem(item_id);
+                    info.correct = true;
+                    CameraInputData.this.info = info;//全域info = getinfo
+                    CameraInputData.this.updateViewer();
 
-                HttpRequest.ItemState state = new HttpRequest.ItemState();
-                state.correct = true;
-                state.discard = info.discard;// this長什麼樣子 = 資料來源
-                state.fixing = info.fixing;
-                state.unlabel = info.unlabel;
-                request.UpdateItem(item_id, null, null, state);
+                    HttpRequest.ItemState state = new HttpRequest.ItemState();
+                    state.correct = true;
+                    state.discard = info.discard;// this長什麼樣子 = 資料來源
+                    state.fixing = info.fixing;
+                    state.unlabel = info.unlabel;
+                    request.UpdateItem(item_id, null, null, state);
 
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            } catch (HttpRequest.GetDataError e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(CameraInputData.this, "無此產品", Toast.LENGTH_SHORT).show();
-                    itemDescription.setText("");
-                });
-            } catch (HttpRequest.UpdateDataError e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(CameraInputData.this, "更新失敗", Toast.LENGTH_SHORT).show();
-                    itemDescription.setText("");
-                });
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                } catch (HttpRequest.GetDataError e) {
+                    CameraInputData.this.runOnUiThread(() -> {
+                        Toast.makeText(CameraInputData.this, "無此產品", Toast.LENGTH_SHORT).show();
+                        itemDescription.setText("");
+                    });
+                } catch (HttpRequest.UpdateDataError e) {
+                    CameraInputData.this.runOnUiThread(() -> {
+                        Toast.makeText(CameraInputData.this, "更新失敗", Toast.LENGTH_SHORT).show();
+                        itemDescription.setText("");
+                    });
+                }
             }
         }).start();
     }
@@ -222,7 +227,7 @@ public class CameraInputData extends AppCompatActivity {
 
     final View.OnClickListener toItemDetail = view -> {
         Intent intent = new Intent(this, UpdateItemContent.class);
-        intent.putExtra("item_info", this.info);
+        intent.putExtra("item_info", this.info.item_id + "");
         startActivity(intent);
     };
 

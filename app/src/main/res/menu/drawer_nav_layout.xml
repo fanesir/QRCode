@@ -53,8 +53,20 @@
                 <group android:checkableBehavior="single">
                     <item
                         android:id="@+id/aboutBrrower"
-                        android:icon="@drawable/accountadd"
                         android:title="關於借出清單" />
+                    <item
+                        android:id="@+id/addBrrowerAccount"
+                        android:icon="@drawable/accountadd"
+                        android:title="新增借出人" />
+                    <item
+                        android:id="@+id/allbrroweraccount"
+                        android:title="所有借出人" />
+                    <item
+                        android:id="@+id/returned"
+                        android:title="已還借出人" />
+                    <item
+                        android:id="@+id/notpaid"
+                        android:title="未還借出人" />
 
                 </group>
             </menu>

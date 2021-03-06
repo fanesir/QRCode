@@ -80,7 +80,7 @@ public class LoginMainActivity extends AppCompatActivity {
                         accountInfo.put("password", login_password.getText().toString());
                         Log.d("hello", accountInfo.toString());
                         fos.write(accountInfo.toString().getBytes());
-                        //Toast.makeText(this,ACCANDPAS,Toast.LENGTH_SHORT).show();
+
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
