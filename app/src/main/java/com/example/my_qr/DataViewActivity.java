@@ -92,7 +92,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
                 }
 
                 if (id == R.id.addBrrowerAccount) {
-                    Intent intent = new Intent(DataViewActivity.this, NewBorrowerActivity.class);
+                    Intent intent = new Intent(DataViewActivity.this, CameraGetItemId.class);
                     startActivity(intent);
                 }
 

@@ -30,8 +30,9 @@ import androidx.core.app.ActivityCompat;
 public class CameraInputData extends AppCompatActivity {
     TextView itemDescription;
     SurfaceView surfaceView;
-    BarcodeDetector barcodeDetector;
     CameraSource cameraSource;
+
+    BarcodeDetector barcodeDetector;
     HttpRequest.ItemInfo info;
 
     CheckBox correct, discard, fixing, unlabel;

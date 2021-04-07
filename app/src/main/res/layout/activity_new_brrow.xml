@@ -16,10 +16,23 @@
 
 
         <EditText
-            android:id="@+id/edbrnumber"
-            android:layout_width="wrap_content"
+            android:id="@+id/edbrname"
+            android:layout_width="0sp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="16sp"
+            android:ems="10"
+            android:hint="借出人姓名"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+        <EditText
+            android:id="@+id/edbrnumber"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36sp"
             android:ems="10"
             android:hint="電話"
             android:inputType="phone"
@@ -28,114 +41,129 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edbrname" />
 
-        <EditText
-            android:id="@+id/edbrname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
-            android:ems="10"
-            android:hint="借出人姓名"
-            android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView6" />
-
         <LinearLayout
             android:id="@+id/linearLayout3"
-            android:layout_width="0dp"
-            android:layout_height="66dp"
-            android:orientation="horizontal"
+            android:layout_width="0sp"
+            android:layout_height="200sp"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+            app:layout_constraintTop_toBottomOf="@+id/edbrnumber">
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:text="借出時間" />
 
             <Button
                 android:id="@+id/brrowtimebtn"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="選擇日期與時間" />
+                android:text="選擇借出日期與時間" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:text="歸還時間" />
 
             <Button
                 android:id="@+id/returnbtn"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="選擇日期與時間" />
+                android:text="選擇歸還日期與時間" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout4"
-            android:layout_width="0dp"
-            android:layout_height="27dp"
+            android:layout_width="0sp"
+            android:layout_height="27sp"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:text="新增借出人"
+            android:textAlignment="viewStart"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout5"
+            android:layout_width="0sp"
+            android:layout_height="27sp"
+
+            android:layout_marginTop="5sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="備註"
+                android:text="借閱項目"
                 android:textSize="20sp" />
-
         </LinearLayout>
+
 
         <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="0dp"
-            android:layout_height="29dp"
-            android:layout_marginTop="64dp"
-            android:orientation="horizontal"
+            android:id="@+id/linearLayout6"
+            android:layout_width="0sp"
+            android:layout_height="27sp"
+
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.75"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edbrnumber">
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
             <TextView
-                android:id="@+id/textView12"
+                android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="借出時間"
-                android:textAlignment="center"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="歸還時間"
-                android:textAlignment="center"
+                android:text="備註"
                 android:textSize="20sp" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="新增借出人"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <com.classichu.lineseditview.LinesEditView
             android:id="@+id/linesEditView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginTop="144dp"
+            android:layout_margin="10sp"
+            android:layout_marginTop="8sp"
+            android:layout_marginEnd="8sp"
             app:classic_hintText="備註"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
-            tools:layout_editor_absoluteX="0dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 
         <Button
             android:id="@+id/updatabrrowbutton"
@@ -147,7 +175,22 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linesEditView" />
+            app:layout_constraintTop_toBottomOf="@+id/linesEditView"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="0sp"
+            android:layout_height="100sp"
+            android:layout_marginTop="24sp"
+            android:text="掃描的財產"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

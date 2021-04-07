@@ -379,6 +379,7 @@ public class HttpRequest {
         protected String location;
         protected String name;
         protected String note;
+        protected Integer id;
 
         protected boolean correct;
         protected boolean discard;
@@ -391,6 +392,7 @@ public class HttpRequest {
             this.cost = this.defaultGet("cost", 0);
             this.date = this.defaultGet("date", "");
             this.item_id = this.mustGet("item_id");
+            this.id = this.mustGet("id");
             this.location = this.mustGet("location");
             this.name = this.mustGet("name");
             this.note = this.mustGet("note");

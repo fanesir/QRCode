@@ -2,13 +2,15 @@ package com.example.my_qr;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TimePicker;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.classichu.lineseditview.LinesEditView;
@@ -26,7 +28,10 @@ public class NewBorrowerActivity extends AppCompatActivity {
     LinesEditView noteEditView;
     TimePickerDialog timePickerDialog;
     Calendar calendar;
-    String sDate, sTime, rDate, rTime, brrowdatatojason, returndatatojason;
+    String sDate, sTime, rDate, rTime, brrowdatatojason, returndatatojason, getItemID, getItemName;
+    TextView getBrrowItemInfo;
+    Spinner spinner;
+    Integer getItemJsonId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +42,16 @@ public class NewBorrowerActivity extends AppCompatActivity {
         brrowtimebtn = findViewById(R.id.brrowtimebtn);
         brrowreturnbtn = findViewById(R.id.returnbtn);
         noteEditView = findViewById(R.id.linesEditView);
+        getBrrowItemInfo = findViewById(R.id.textView11);
+        spinner = findViewById(R.id.spinner);
         calendar = Calendar.getInstance();
+
+        Intent intent = getIntent();
+        getItemID = intent.getStringExtra("ItemID");
+        getItemName = intent.getStringExtra("ItemName");
+        getItemJsonId = getIntent().getExtras().getInt("getItemJsonId");
+
+        getBrrowItemInfo.setText("財產ID:" + getItemID + "\n" + "財產名稱:" + getItemName + "\n" + "資料庫項目ID:" + getItemJsonId);
 
 
         brrowtimebtn.setOnClickListener(new View.OnClickListener() {
@@ -66,8 +80,6 @@ public class NewBorrowerActivity extends AppCompatActivity {
                         Log.i("stime", sDate);
                     }
                 }, year, moth, day).show();
-
-
             }
 
         });
@@ -83,15 +95,10 @@ public class NewBorrowerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                timePickerDialog = new TimePickerDialog(NewBorrowerActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                timePickerDialog = new TimePickerDialog(NewBorrowerActivity.this, (timePicker, hour, minute) -> {
 
-                        rTime = "" + hourconvertDate(hour) + ":" + minuteconvertDate(minute);
-                        runButton(false);
-
-
-                    }
+                    rTime = "" + hourconvertDate(hour) + ":" + minuteconvertDate(minute);
+                    runButton(false);
                 }, hour, minute, true);
                 timePickerDialog.show();
 
@@ -113,6 +120,7 @@ public class NewBorrowerActivity extends AppCompatActivity {
     }
 
 
+
     public String hourconvertDate(int input) {
         if (input >= 10) {
             return String.valueOf(input);
@@ -132,10 +140,8 @@ public class NewBorrowerActivity extends AppCompatActivity {
     public void runButton(Boolean choose) {
         if (choose == true) {//借出按鈕
             brrowtimebtn.setText(sDate + "  " + sTime);
-
             return;
         } else if (choose == false) {//歸還時間
-            Log.i("when false", choose + "");
             brrowreturnbtn.setText(rDate + "  " + rTime);
             return;
         }
@@ -152,7 +158,7 @@ public class NewBorrowerActivity extends AppCompatActivity {
         String note = noteEditView.getContentText();
 
 
-        if (name.equals("") || phoneNumber.equals("") || sDate.equals("") || rDate.equals("")) {
+        if (name.equals("") || phoneNumber.equals("") || sDate.equals("") || rDate.equals("") || getItemID == "" || getItemName == "") {
             Toast.makeText(NewBorrowerActivity.this, "有欄位空白", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -162,11 +168,14 @@ public class NewBorrowerActivity extends AppCompatActivity {
                 HttpRequest.getInstance().CreateBorrower(name, phoneNumber);
                 HttpRequest.BorrowerInfo info = HttpRequest.getInstance().CreateBorrower(name, phoneNumber);
                 Log.i("此借出人的ID", info.id + "");
-                HttpRequest.getInstance().CreateThisAccountBorrowerItem(info.id, brrowtime, returntime, note, 132);
-
+                HttpRequest.getInstance().CreateThisAccountBorrowerItem(info.id, brrowtime, returntime, note + "借出商品", getItemJsonId);
 
                 runOnUiThread(() -> {
                     Toast.makeText(NewBorrowerActivity.this, R.string.sign_up_success, Toast.LENGTH_SHORT).show();
+                    finish();
+
+                    Intent intent = new Intent(NewBorrowerActivity.this, DataViewActivity.class);
+                    startActivity(intent);
                 });
 
             } catch (JSONException | IOException e) {
@@ -186,4 +195,3 @@ public class NewBorrowerActivity extends AppCompatActivity {
 
 
 }
-
