@@ -14,6 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.my_qr.ExtentBaseAdpter.LoadData;
 import com.google.android.material.navigation.NavigationView;
@@ -95,7 +96,11 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
                     Intent intent = new Intent(DataViewActivity.this, CameraGetItemId.class);
                     startActivity(intent);
                 }
+                if (id == R.id.returned) {
+                Intent intent = new Intent(DataViewActivity.this,TestMainActivity.class);
+                startActivity(intent);
 
+                }
                 return false;
             }
         });

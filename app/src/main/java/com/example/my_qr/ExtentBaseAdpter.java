@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ExtentBaseAdpter<T> extends BaseAdapter implements Serializable {
-    protected List<T> data = new ArrayList<T>();
+    protected List<T> data = new ArrayList<T>();//nd data have info
     protected Activity activity;
     protected boolean done = false;
     protected int length = 0;
@@ -66,6 +66,7 @@ public abstract class ExtentBaseAdpter<T> extends BaseAdapter implements Seriali
 
     @Override
     public int getCount() {
+
         return this.data.size();
     }
 

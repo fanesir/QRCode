@@ -1,6 +1,7 @@
 package com.example.my_qr;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,11 +15,13 @@ import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ListBorrowerActivity extends AppCompatActivity {
-
+    String st1[] = {"Name01", "Name02", "Name03", "Name04", "Name05", "Name0123121321", "htc1000000"};
     ListView lvBorrowerAccount;
     HttpRequest.BorrowerInfo getBorrowerInfo;
     SwipyRefreshLayout swipyRefreshLayout;
@@ -43,8 +46,8 @@ public class ListBorrowerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_brrow);
-        swipyRefreshLayout = findViewById(R.id.swipyrefreshlayout);
 
+        swipyRefreshLayout = findViewById(R.id.swipyrefreshlayout);
         lvBorrowerAccount = findViewById(R.id.showbrrowlisst);
         lvBorrowerAccount.setAdapter(new BorrowerInfoItemAdpter(this, LoadBrrowerInfo));
 
@@ -100,5 +103,25 @@ public class ListBorrowerActivity extends AppCompatActivity {
             return view;
         }
     }
+
+    class BorrowerInfoItemAdpterII extends TestExtendBaseadpter {
+
+        protected BorrowerInfoItemAdpterII(Context context, ArrayList extentarray) {
+            super(context, extentarray);
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            if (view == null) {
+                view = LayoutInflater.from(context).inflate(R.layout.list_item, viewGroup, false);
+            }
+            TextView item_name = view.findViewById(R.id.item_name);
+            item_name.setText(extentarray.get(i) + "");
+            return view;
+
+        }
+    }
+
+
 }
 
