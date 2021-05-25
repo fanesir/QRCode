@@ -12,7 +12,7 @@ public class JsonData implements Serializable {//不知道會傳過來什麼物�
         this.object = object;
     }
 
-    protected <T> T mustGet(String name) throws JSONException {
+    protected <T> T mustGet(String name) throws JSONException {//can String int
         return (T) this.object.get(name);
     }
 

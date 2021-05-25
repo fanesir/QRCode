@@ -31,13 +31,27 @@ public class TestMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test_main);
         listView = findViewById(R.id.getlistviewtestt);
         listView.setAdapter(new MainClass(this, new ArrayList<String>(Arrays.asList(st1))));
+        listView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
+
 
     class MainClass extends TestExtendBaseadpter {
 
         protected MainClass(Context context, ArrayList extentarray) {
             super(context, extentarray);
         }
+
+        protected MainClass(int i, int i2, int i3) {
+            super(i, i2, i3);
+        }
+
+        @Override
+
 
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (view == null) {

@@ -43,7 +43,6 @@ public class NewBorrowerActivity extends AppCompatActivity {
         brrowreturnbtn = findViewById(R.id.returnbtn);
         noteEditView = findViewById(R.id.linesEditView);
         getBrrowItemInfo = findViewById(R.id.textView11);
-        spinner = findViewById(R.id.spinner);
         calendar = Calendar.getInstance();
 
         Intent intent = getIntent();
@@ -153,7 +152,7 @@ public class NewBorrowerActivity extends AppCompatActivity {
         String name = borrowerName.getText().toString();
         String phoneNumber = borrowerPhoneNumber.getText().toString();
         String brrowtime = brrowdatatojason + "T" + sTime + ":54.236129179+08:00";
-        String returntime = returndatatojason + "T" + rTime + ":54.236129179Z";
+        String returntime = returndatatojason + "T" + rTime + ":00Z";
 
         String note = noteEditView.getContentText();
 
@@ -165,19 +164,11 @@ public class NewBorrowerActivity extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                HttpRequest.getInstance().CreateBorrower(name, phoneNumber);
                 HttpRequest.BorrowerInfo info = HttpRequest.getInstance().CreateBorrower(name, phoneNumber);
-                Log.i("此借出人的ID", info.id + "");
-                HttpRequest.getInstance().CreateThisAccountBorrowerItem(info.id, brrowtime, returntime, note + "借出商品", getItemJsonId);
-
+                HttpRequest.getInstance().CreateThisAccountBorrowerItem(info.id, brrowtime, returntime, note, getItemJsonId);
                 runOnUiThread(() -> {
                     Toast.makeText(NewBorrowerActivity.this, R.string.sign_up_success, Toast.LENGTH_SHORT).show();
-                    finish();
-
-                    Intent intent = new Intent(NewBorrowerActivity.this, DataViewActivity.class);
-                    startActivity(intent);
                 });
-
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             } catch (HttpRequest.SignUpError signUpError) {
@@ -187,6 +178,10 @@ public class NewBorrowerActivity extends AppCompatActivity {
                 });
             }
         }).start();
+        Intent intent = new Intent(NewBorrowerActivity.this, DataViewActivity.class);
+        startActivity(intent);
+        finish();
+
     }
 
     public void onResume() {

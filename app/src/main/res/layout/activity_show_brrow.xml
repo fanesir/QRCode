@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ListBorrowerActivity"
+    android:background="#FFFFFF"
     android:orientation="vertical">
 
 
@@ -20,7 +21,10 @@
             android:layout_height="0dp"
             android:layout_marginStart="3dp"
             android:layout_marginEnd="3dp"
-            app:layout_constraintHorizontal_bias="0.47" />
+            app:layout_constraintHorizontal_bias="0.47"
+            android:divider="#FFFFFF"
+            android:dividerHeight="20sp"
+            />
     </com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout>
 
 </LinearLayout>

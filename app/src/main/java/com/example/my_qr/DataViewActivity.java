@@ -1,6 +1,7 @@
 package com.example.my_qr;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,8 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +58,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     };
 
 
-    LoadData<HttpRequest.ItemInfo> searchName = offset -> {
+    LoadData<HttpRequest.ItemInfo> searchName = (int offset) -> {
         try {
             ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
             state.result = HttpRequest.getInstance().SearchItem(DataViewActivity.this.searchField.getText().toString());
@@ -77,38 +80,33 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         searchField = findViewById(R.id.item_search_field);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                int id = menuItem.getItemId();
-                if (id == R.id.itemcamera) {
-                    Intent intent = new Intent(DataViewActivity.this, CameraInputData.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    DataViewActivity.this.startActivity(intent);
-                }
-                if (id == R.id.allbrroweraccount) {
-                    Intent intent = new Intent(DataViewActivity.this, ListBorrowerActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    DataViewActivity.this.startActivity(intent);
-                }
-
-                if (id == R.id.addBrrowerAccount) {
-                    Intent intent = new Intent(DataViewActivity.this, CameraGetItemId.class);
-                    startActivity(intent);
-                }
-                if (id == R.id.returned) {
-                Intent intent = new Intent(DataViewActivity.this,TestMainActivity.class);
-                startActivity(intent);
-
-                }
-                return false;
+        navigationView.setNavigationItemSelectedListener((MenuItem menuItem) -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.itemcamera) {
+                Intent intent = new Intent(DataViewActivity.this, CameraInputData.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                DataViewActivity.this.startActivity(intent);
             }
+            if (id == R.id.allbrroweraccount) {
+                Intent intent = new Intent(DataViewActivity.this, ListBorrowerActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                DataViewActivity.this.startActivity(intent);
+            }
+
+            if (id == R.id.addBrrowerAccount) {
+                Intent intent = new Intent(DataViewActivity.this, CameraGetItemId.class);
+                startActivity(intent);
+            }
+
+
+
+            return false;
         });
 
         Menu menu = navigationView.getMenu();
         getAllItem = menu.findItem(R.id.getAllItem);
         View getAllactionView = MenuItemCompat.getActionView(getAllItem);
-        getAllactionView.setOnClickListener(view -> {
+        getAllactionView.setOnClickListener((View view) -> {
             searchState = null;
             select(null, false, false, false, false);
             CompoundButton checkInventor = (CompoundButton) menuItemInventory.getActionView();//CompoundButton
@@ -126,7 +124,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         menuItemInventory = menu.findItem(R.id.menuItemInventory);
         View getinventory = MenuItemCompat.getActionView(menuItemInventory);
-        getinventory.setOnClickListener(view -> {
+        getinventory.setOnClickListener((View view) -> {
             searchState = new HttpRequest.ItemState();
             select(searchState, true, false, false, false);
             correctboolean = true;
@@ -139,7 +137,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         menuItemNoInventory = menu.findItem(R.id.menuItemNoInventory);
         View noInventory = MenuItemCompat.getActionView(menuItemNoInventory);
-        noInventory.setOnClickListener(view -> {
+        noInventory.setOnClickListener((View view) -> {
             searchState = new HttpRequest.ItemState();
             select(searchState, false, false, false, false);
             correctboolean = false;
@@ -151,7 +149,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         });
         discard = menu.findItem(R.id.scrapped);
         View discardView = MenuItemCompat.getActionView(discard);
-        discardView.setOnClickListener(view -> {
+        discardView.setOnClickListener((View view) -> {
             select(searchState, correctboolean, true, false, false);
             CompoundButton checkAllItem = (CompoundButton) fixIng.getActionView();
             CompoundButton checkInventor = (CompoundButton) unlabel.getActionView();
@@ -160,7 +158,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         });
         fixIng = menu.findItem(R.id.fix);
         View fixIngView = MenuItemCompat.getActionView(fixIng);
-        fixIngView.setOnClickListener(view -> {
+        fixIngView.setOnClickListener((View view) -> {
             select(searchState, correctboolean, false, true, false);
             CompoundButton checkAllItem = (CompoundButton) discard.getActionView();
             CompoundButton checkInventor = (CompoundButton) unlabel.getActionView();
@@ -170,7 +168,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
 
         unlabel = menu.findItem(R.id.notposted);
         View unlabelView = MenuItemCompat.getActionView(unlabel);
-        unlabelView.setOnClickListener(view -> {
+        unlabelView.setOnClickListener((View view) -> {
             select(searchState, correctboolean, false, false, true);
             CompoundButton checkAllItem = (CompoundButton) discard.getActionView();
             CompoundButton checkInventor = (CompoundButton) fixIng.getActionView();
@@ -178,7 +176,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             checkInventor.setChecked(false);
         });
 
-        lv.setOnItemClickListener((adapterView, view, i, l) -> {
+        lv.setOnItemClickListener((AdapterView<?> adapterView, View view, int i, long l) -> {
             ItemAdapter itemAdapter = (ItemAdapter) adapterView.getAdapter();
             HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) itemAdapter.getItem(i);//第幾個並把資料帶過去
 
@@ -202,7 +200,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         searchState.discard = discard;
         searchState.fixing = fixIng;
         searchState.unlabel = unlabel;
-        LoadData<HttpRequest.ItemInfo> loadItem = offset -> {
+        LoadData<HttpRequest.ItemInfo> loadItem = (int offset) -> {
             try {
                 ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
                 state.result = HttpRequest.getInstance().GetItem(20, offset, searchState);
@@ -223,7 +221,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             AlertDialog.Builder ad = new AlertDialog.Builder(this);
             ad.setTitle("離開");
             ad.setMessage("離開程式?");
-            ad.setPositiveButton("是", (dialogInterface, i) -> {
+            ad.setPositiveButton("是", (DialogInterface dialogInterface, int i) -> {
                 System.exit(0); // 離開程式
             }).show();
 
@@ -259,20 +257,18 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             if (!done && i + 5 > this.data.size()) {
                 this.loadItems();
             }
-            HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) this.getItem(i);
 
+            HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) this.getItem(i);
             TextView item_name = view.findViewById(R.id.item_name);
-            TextView item_status = view.findViewById(R.id.item_status);
             TextView item_local = view.findViewById(R.id.localitem);
+            ImageView item_start = view.findViewById(R.id.item_imageviewstatus);
 
             item_name.setText(info.name);
             item_local.setText(info.location);
             if (info.correct) {
-                item_status.setTextColor(Color.argb(255, 0, 255, 0));
-                item_status.setText("已盤點");
+                item_start.setImageResource(android.R.drawable.btn_star_big_on);
             } else {
-                item_status.setTextColor(Color.argb(255, 255, 0, 0));
-                item_status.setText("未盤點");
+                item_start.setImageResource(android.R.drawable.btn_star_big_off);
             }
             return view;
         }

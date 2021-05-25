@@ -165,6 +165,17 @@ public class HttpRequest {
         return new ItemInfo(new JSONObject(response.body().string()));
     }
 
+    public ItemInfo GetItem(int item_id) throws IOException, JSONException, GetDataError {
+        Response response = this.Get("/api/item", new String[][]{
+                {"id", item_id+""}
+        });
+        if (response.code() != 200) {
+            Log.d("HttpError", response.body().string());
+            throw new GetDataError();
+        }
+        return new ItemInfo(new JSONObject(response.body().string()));
+    }
+
     public List<ItemInfo> GetItem(int limit, int offset, ItemState state ) throws IOException, JSONException, GetDataError {
         String[][] query;
         if (state == null) {
@@ -252,13 +263,19 @@ public class HttpRequest {
         }
     }
 
-    public List<BorrowerInfo> GetBorrower(int limit, int offset) throws IOException, JSONException, GetDataError {
+    public BorrowerInfo GetBorrower(int id) throws IOException, JSONException {
+        Response response = this.Get("/api/borrower", new String[][]{
+            {"id", "" + id},
+        });
+        return new BorrowerInfo(new JSONObject(response.body().string()));
+    }
+
+    public List<BorrowerInfo> GetBorrowerList(int limit, int offset) throws IOException, JSONException, GetDataError {
         String[][] query;
 
         query = new String[][]{//Response 請求
                 {"limit", Integer.toString(limit)},
                 {"offset", Integer.toString((offset))}
-
         };
 
         Response response = this.Get("/api/borrower", query);
@@ -275,6 +292,8 @@ public class HttpRequest {
         }
         return array;
     }
+
+
 
     public BorrowRecord GetBorrowerRecord(int id) throws IOException, JSONException, GetDataError {
         String[][] query;
@@ -421,14 +440,19 @@ public class HttpRequest {
 
     class BorrowRecord extends JsonData implements Serializable {
         protected int id;
-        //        protected String name;
         protected String borrow_date;
-
+        protected String note;
+        protected int item_id;
+        protected int borrower_id;
         BorrowRecord(JSONObject object) throws JSONException {
             super(object);
-            this.id = this.mustGet("id");
+
+            this.id = this.mustGet("id");//Brrow Account item
+            this.item_id = this.mustGet("item_id");//Brrow item
+            this.borrower_id = this.mustGet("borrower_id");
             this.borrow_date = this.mustGet("borrow_date");
-//            this.note = this.mustGet("note");
+            this.note = this.mustGet("note");
+
         }
     }
 

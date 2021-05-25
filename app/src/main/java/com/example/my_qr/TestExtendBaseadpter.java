@@ -2,6 +2,7 @@ package com.example.my_qr;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,10 @@ public abstract class TestExtendBaseadpter<T> extends BaseAdapter implements Ser
         this.extentarray = extentarray;
     }
 
+    protected TestExtendBaseadpter(int context, int extentarraym, int aa) {//, ArrayList<ClipData.Item> items
+        Log.i("info", context + extentarraym + aa + " ****");
+    }
+
     @Override
     public int getCount() {
         return extentarray.size();
@@ -31,8 +36,9 @@ public abstract class TestExtendBaseadpter<T> extends BaseAdapter implements Ser
 
     @Override
     public Object getItem(int i) {
-        return extentarray.get(i);
+        return null;
     }
+
 
     @Override
     public long getItemId(int i) {
