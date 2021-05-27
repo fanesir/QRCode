@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="10sp"
+        android:text="修改借貸人資料"
+        android:textColor="#0B0909"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="50sp"
+        android:layout_height="47sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView17"
+        app:srcCompat="@android:drawable/ic_menu_myplaces" />
+
+    <EditText
+        android:id="@+id/edaccountname"
+        android:layout_width="216sp"
+        android:layout_height="47sp"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="accname"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toEndOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="50sp"
+        android:layout_height="47sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="40sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:srcCompat="@android:drawable/ic_menu_call" />
+
+    <EditText
+        android:id="@+id/edaccountphone"
+        android:layout_width="216sp"
+        android:layout_height="47sp"
+        android:layout_marginTop="10sp"
+        android:ems="10"
+        android:hint="accphone"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/textView18" />
+
+    <TextView
+        android:id="@+id/textView17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60sp"
+        android:layout_marginTop="30dp"
+        android:text="修改借貸人名稱"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60sp"
+        android:layout_marginTop="10sp"
+        android:text="修改借貸人電話"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+    <Button
+        android:id="@+id/buttonchangeaccount"
+        android:layout_width="388sp"
+        android:layout_height="36sp"
+        android:layout_marginTop="12dp"
+        android:background="#2196F3"
+        android:text="確認修改"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.434"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edaccountphone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

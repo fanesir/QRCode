@@ -26,36 +26,41 @@ public class ListBorrowerActivity extends AppCompatActivity {
     ListView lvBorrowerAccount;
     HttpRequest.BorrowRecord getBorrowerInfo;
     SwipyRefreshLayout swipyRefreshLayout;
-    int accountId;
+
 
     Map<Integer, HttpRequest.BorrowerInfo> borrowerInfoMap = new HashMap<>();
     Map<Integer, HttpRequest.ItemInfo> itemInfoMap = new HashMap<>();
 
-    ExtentBaseAdpter.LoadData<HttpRequest.BorrowRecord> LoadBrrowerInfo = offset -> {
-        ExtentBaseAdpter.LoadState<HttpRequest.BorrowRecord> results = new ExtentBaseAdpter.LoadState<>();
 
-        try {
-            results.result = HttpRequest.getInstance().GetBorrowerRecord(30, offset);
-            for (HttpRequest.BorrowRecord record : results.result) {
+    ExtentBaseAdpter.LoadData<HttpRequest.BorrowRecord> LoadBrrowerInfo = new ExtentBaseAdpter.LoadData<HttpRequest.BorrowRecord>() {
+        @Override
+        public ExtentBaseAdpter.LoadState<HttpRequest.BorrowRecord> load(int offset) {
+            ExtentBaseAdpter.LoadState<HttpRequest.BorrowRecord> results = new ExtentBaseAdpter.LoadState<>();
 
-                if (!borrowerInfoMap.containsKey(record.borrower_id)) {
-                    HttpRequest.BorrowerInfo info = HttpRequest.getInstance().GetBorrower(record.borrower_id);
-                    borrowerInfoMap.put(record.borrower_id, info);
+            try {
+                results.result = HttpRequest.getInstance().GetBorrowerRecord(30, offset);
+                for (HttpRequest.BorrowRecord record : results.result) {
+
+                    if (!borrowerInfoMap.containsKey(record.borrower_id)) {
+                        HttpRequest.BorrowerInfo info = HttpRequest.getInstance().GetBorrower(record.borrower_id);
+                        borrowerInfoMap.put(record.borrower_id, info);//(用戶id,用戶內的如電話姓名等)
+
+                    }
+                    if (!itemInfoMap.containsKey(record.item_id)) {
+                        HttpRequest.ItemInfo info = HttpRequest.getInstance().GetItem(record.item_id);
+                        itemInfoMap.put(record.item_id, info);
+                    }
+
                 }
-                if (!itemInfoMap.containsKey(record.item_id)) {
-                    HttpRequest.ItemInfo info = HttpRequest.getInstance().GetItem(record.item_id);
-                    itemInfoMap.put(record.item_id, info);
-                }
-
+                return results;
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            } catch (HttpRequest.GetDataError getDataError) {
+                getDataError.printStackTrace();
             }
-            return results;
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        } catch (HttpRequest.GetDataError getDataError) {
-            getDataError.printStackTrace();
-        }
 
-        return null;
+            return null;
+        }
     };
 
 
@@ -79,20 +84,11 @@ public class ListBorrowerActivity extends AppCompatActivity {
             intent.putExtra("Brrow", itemInfo2);
 
             startActivity(intent);
-
-
+            finish();
         });
 
         lvBorrowerAccount.setOnItemLongClickListener((adapterView, view, i, l) -> {//長按編輯
-//            BorrowerInfoItemAdpter borrowerListAdapter = (BorrowerInfoItemAdpter) adapterView.getAdapter();//getAdapter 方法
-//
-//            HttpRequest.BorrowRecord getBorrowerInfo = (HttpRequest.BorrowRecord) borrowerListAdapter.getItem(i);
-//            HttpRequest.BorrowerInfo itemInfo2 = borrowerInfoMap.get(getBorrowerInfo.borrower_id);
-//
-//            Intent intent = new Intent(ListBorrowerActivity.this, UpdataBrrowContent.class);
-//            intent.putExtra("Brrow", itemInfo2);
-//
-//            startActivity(intent);
+
             return false;
         });
 
