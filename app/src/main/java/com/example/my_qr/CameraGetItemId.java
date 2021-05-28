@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -99,6 +100,7 @@ public class CameraGetItemId extends AppCompatActivity {
             try {
                 HttpRequest request = HttpRequest.getInstance();
                 HttpRequest.ItemInfo info = request.GetItem(itemId);
+
                 infoItem = info;
                 runOnUiThread(() -> brrowItemtext.setText("借出產品:" + info.name + "\n" + "借出ID:" + info.item_id + "\n"));
                 getBackItemName = info.name;

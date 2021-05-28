@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.renderscript.Short3;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,31 +24,36 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 public class UpdataBrrowContent extends AppCompatActivity {
-    TextView brrownameid;
+    TextView brrownameid, brrowitedid;
     CardView cardView, cardViewbrrowitem;
     HttpRequest.BorrowerInfo borrowerInfo;
     AlertDialog alertDialog;
     AlertDialog.Builder alertdialog;
-    String getrecord_item_id;
+    HttpRequest.ItemInfo getrecord_item_id;
+    String brrowname,brrowphone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_updata_brrow_content);
 
-        cardViewbrrowitem = findViewById(R.id.cardvidwednamebrrowitem);
         brrownameid = findViewById(R.id.brrownameid);
+        brrowitedid = findViewById(R.id.brrowitedid);
+        cardViewbrrowitem = findViewById(R.id.cardvidwednamebrrowitem);
         cardView = findViewById(R.id.cardvidwedname);
+
         Intent intent = UpdataBrrowContent.this.getIntent();
 
-        getrecord_item_id = intent.getStringExtra("BrrowRecord_item_id");
+        getrecord_item_id = (HttpRequest.ItemInfo) intent.getSerializableExtra("BrrowRecord_item_id");
         borrowerInfo = (HttpRequest.BorrowerInfo) intent.getSerializableExtra("BrrowInfo");
+        brrowname = borrowerInfo.name;
+        brrowphone=borrowerInfo.phone_number;
 
         new Thread(() -> {
             try {
                 HttpRequest request = HttpRequest.getInstance();
-                HttpRequest.ItemInfo info = request.GetItem(getrecord_item_id);
-                Log.i("asd",info.name+"");
+                HttpRequest.ItemInfo info = request.GetItem(getrecord_item_id.item_id);
+                runOnUiThread(() -> brrowitedid.setText(info.name + ""));
 
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -68,8 +75,9 @@ public class UpdataBrrowContent extends AppCompatActivity {
             EditText edaccountphone = (EditText) dialogView.findViewById(R.id.edaccountphone);
             Button buttonchangeaccount = (Button) dialogView.findViewById(R.id.buttonchangeaccount);
 
-            editTextname.setText(borrowerInfo.name + "");
-            edaccountphone.setText(borrowerInfo.phone_number + "");
+            editTextname.setText(brrowname+ "");
+            edaccountphone.setText(brrowphone + "");
+
             alertDialog = alertdialog.create();
             alertDialog.show();
 
@@ -78,20 +86,36 @@ public class UpdataBrrowContent extends AppCompatActivity {
                 String phone = edaccountphone.getText().toString();
                 int id = borrowerInfo.id;
 
+                if (name.equals("")){
+                    edaccountphone.setError("null");
+                    return;
+                }else if (phone.equals("")) {
+                    editTextname.setError("null");
+                    return;
+                }
+
                 new Thread(() -> {
                     try {
                         HttpRequest.getInstance().UpdateBorrower(name, phone, id);
                         runOnUiThread(() -> Toast.makeText(UpdataBrrowContent.this, "更新借出人成功", Toast.LENGTH_LONG).show());
+
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     } catch (HttpRequest.UpdateDataError updateDataError) {
                         updateDataError.printStackTrace();
                     }
                 }).start();
+
+                brrowname=name;
+                brrowphone=phone;
+
                 brrownameid.setText(name + "");
                 alertDialog.cancel();
             });
 
+        });
+
+        cardViewbrrowitem.setOnClickListener(view -> {
 
         });
     }

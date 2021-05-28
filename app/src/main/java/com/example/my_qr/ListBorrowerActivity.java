@@ -75,19 +75,18 @@ public class ListBorrowerActivity extends AppCompatActivity {
             BorrowerInfoItemAdpter borrowerListAdapter = (BorrowerInfoItemAdpter) adapterView.getAdapter();//getAdapter 方法
 
             HttpRequest.BorrowRecord getBorrowerInfo = (HttpRequest.BorrowRecord) borrowerListAdapter.getItem(i);
+
             HttpRequest.BorrowerInfo itemInfo2 = borrowerInfoMap.get(getBorrowerInfo.borrower_id);
+            HttpRequest.ItemInfo itemInfo = itemInfoMap.get(getBorrowerInfo.item_id);//給予借出者的項目ID
 
             Intent intent  = new Intent(ListBorrowerActivity.this,UpdataBrrowContent.class);
             intent.putExtra("BrrowInfo", itemInfo2);
-
-
-
+            intent.putExtra("BrrowRecord_item_id",itemInfo);
             startActivity(intent);
             finish();
         });
 
         lvBorrowerAccount.setOnItemLongClickListener((adapterView, view, i, l) -> {//長按編輯
-
             return false;
         });
 
@@ -112,7 +111,6 @@ public class ListBorrowerActivity extends AppCompatActivity {
                 this.loadItems();
             }
             HttpRequest.BorrowRecord info = (HttpRequest.BorrowRecord) this.getItem(i);
-
 
             TextView item_name = view.findViewById(R.id.infobrrow);
             TextView item_local = view.findViewById(R.id.namebrrow);
