@@ -23,20 +23,38 @@ import androidx.cardview.widget.CardView;
 
 public class UpdataBrrowContent extends AppCompatActivity {
     TextView brrownameid;
-    CardView cardView;
+    CardView cardView, cardViewbrrowitem;
     HttpRequest.BorrowerInfo borrowerInfo;
     AlertDialog alertDialog;
     AlertDialog.Builder alertdialog;
+    String getrecord_item_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_updata_brrow_content);
 
+        cardViewbrrowitem = findViewById(R.id.cardvidwednamebrrowitem);
         brrownameid = findViewById(R.id.brrownameid);
         cardView = findViewById(R.id.cardvidwedname);
         Intent intent = UpdataBrrowContent.this.getIntent();
 
-        borrowerInfo = (HttpRequest.BorrowerInfo) intent.getSerializableExtra("Brrow");
+        getrecord_item_id = intent.getStringExtra("BrrowRecord_item_id");
+        borrowerInfo = (HttpRequest.BorrowerInfo) intent.getSerializableExtra("BrrowInfo");
+
+        new Thread(() -> {
+            try {
+                HttpRequest request = HttpRequest.getInstance();
+                HttpRequest.ItemInfo info = request.GetItem(getrecord_item_id);
+                Log.i("asd",info.name+"");
+
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            } catch (HttpRequest.GetDataError getDataError) {
+                getDataError.printStackTrace();
+            }
+        }).start();
+
         brrownameid.setText(borrowerInfo.name + "");
 
 
@@ -70,7 +88,7 @@ public class UpdataBrrowContent extends AppCompatActivity {
                         updateDataError.printStackTrace();
                     }
                 }).start();
-                brrownameid.setText(name+"");
+                brrownameid.setText(name + "");
                 alertDialog.cancel();
             });
 
@@ -81,7 +99,7 @@ public class UpdataBrrowContent extends AppCompatActivity {
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            startActivity(new Intent(UpdataBrrowContent.this,ListBorrowerActivity.class));
+            startActivity(new Intent(UpdataBrrowContent.this, ListBorrowerActivity.class));
             finish();
             return true;
         }

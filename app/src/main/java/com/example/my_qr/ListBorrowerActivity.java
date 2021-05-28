@@ -32,35 +32,32 @@ public class ListBorrowerActivity extends AppCompatActivity {
     Map<Integer, HttpRequest.ItemInfo> itemInfoMap = new HashMap<>();
 
 
-    ExtentBaseAdpter.LoadData<HttpRequest.BorrowRecord> LoadBrrowerInfo = new ExtentBaseAdpter.LoadData<HttpRequest.BorrowRecord>() {
-        @Override
-        public ExtentBaseAdpter.LoadState<HttpRequest.BorrowRecord> load(int offset) {
-            ExtentBaseAdpter.LoadState<HttpRequest.BorrowRecord> results = new ExtentBaseAdpter.LoadState<>();
+    ExtentBaseAdpter.LoadData<HttpRequest.BorrowRecord> LoadBrrowerInfo = offset -> {
+        ExtentBaseAdpter.LoadState<HttpRequest.BorrowRecord> results = new ExtentBaseAdpter.LoadState<>();
 
-            try {
-                results.result = HttpRequest.getInstance().GetBorrowerRecord(30, offset);
-                for (HttpRequest.BorrowRecord record : results.result) {
+        try {
+            results.result = HttpRequest.getInstance().GetBorrowerRecord(30, offset);
+            for (HttpRequest.BorrowRecord record : results.result) {
 
-                    if (!borrowerInfoMap.containsKey(record.borrower_id)) {
-                        HttpRequest.BorrowerInfo info = HttpRequest.getInstance().GetBorrower(record.borrower_id);
-                        borrowerInfoMap.put(record.borrower_id, info);//(用戶id,用戶內的如電話姓名等)
-
-                    }
-                    if (!itemInfoMap.containsKey(record.item_id)) {
-                        HttpRequest.ItemInfo info = HttpRequest.getInstance().GetItem(record.item_id);
-                        itemInfoMap.put(record.item_id, info);
-                    }
+                if (!borrowerInfoMap.containsKey(record.borrower_id)) {
+                    HttpRequest.BorrowerInfo info = HttpRequest.getInstance().GetBorrower(record.borrower_id);
+                    borrowerInfoMap.put(record.borrower_id, info);//(用戶id,用戶內的如電話姓名等)
 
                 }
-                return results;
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            } catch (HttpRequest.GetDataError getDataError) {
-                getDataError.printStackTrace();
-            }
+                if (!itemInfoMap.containsKey(record.item_id)) {
+                    HttpRequest.ItemInfo info = HttpRequest.getInstance().GetItem(record.item_id);
+                    itemInfoMap.put(record.item_id, info);
+                }
 
-            return null;
+            }
+            return results;
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        } catch (HttpRequest.GetDataError getDataError) {
+            getDataError.printStackTrace();
         }
+
+        return null;
     };
 
 
@@ -80,8 +77,10 @@ public class ListBorrowerActivity extends AppCompatActivity {
             HttpRequest.BorrowRecord getBorrowerInfo = (HttpRequest.BorrowRecord) borrowerListAdapter.getItem(i);
             HttpRequest.BorrowerInfo itemInfo2 = borrowerInfoMap.get(getBorrowerInfo.borrower_id);
 
-            Intent intent = new Intent(ListBorrowerActivity.this, UpdataBrrowContent.class);
-            intent.putExtra("Brrow", itemInfo2);
+            Intent intent  = new Intent(ListBorrowerActivity.this,UpdataBrrowContent.class);
+            intent.putExtra("BrrowInfo", itemInfo2);
+
+
 
             startActivity(intent);
             finish();
