@@ -370,7 +370,7 @@ public class HttpRequest {
         JSONObject body = new JSONObject();
         body.put("item_id", item_id);
         if (location != null) {
-            body.put("locaion", location);
+            body.put("location", location);
         }
         if (note != null) {
             body.put("note", note);

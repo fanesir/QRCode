@@ -183,6 +183,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             Intent intent = new Intent(DataViewActivity.this, UpdateItemContent.class);
             intent.putExtra("item_info", info.item_id);//
             startActivity(intent);
+            finish();
         });
 
         findViewById(R.id.sideBarButton).setOnClickListener(this::openSideBar);

@@ -87,10 +87,10 @@ public class UpdataBrrowContent extends AppCompatActivity {
                 int id = borrowerInfo.id;
 
                 if (name.equals("")){
-                    edaccountphone.setError("null");
+                    editTextname.setError("姓名不可空白");
                     return;
                 }else if (phone.equals("")) {
-                    editTextname.setError("null");
+                    edaccountphone.setError("電話不可空白");
                     return;
                 }
 
