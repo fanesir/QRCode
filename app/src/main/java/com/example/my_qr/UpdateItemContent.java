@@ -27,6 +27,7 @@ public class UpdateItemContent extends AppCompatActivity {
     HttpRequest request = HttpRequest.getInstance();
     AlertDialog alertDialog;
     String itemlocation, itemnote;
+    static int fromdataview_int;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +104,6 @@ public class UpdateItemContent extends AppCompatActivity {
                 new Thread(() -> {
                     try {
                         HttpRequest.getInstance().UpdateItem(item_info, edtextitemlocal, edtextitemnote, null);
-
                         runOnUiThread(() -> Toast.makeText(UpdateItemContent.this, "更新成功", Toast.LENGTH_SHORT).show());
                         startActivity(getIntent());
                     } catch (IOException | JSONException e) {
@@ -127,7 +127,12 @@ public class UpdateItemContent extends AppCompatActivity {
                 state.discard = discard.isChecked();
                 state.unlabel = unlabel.isChecked();
                 HttpRequest.getInstance().UpdateItem(item_info, null, null, state);
-                startActivity(getIntent());
+                runOnUiThread(() -> Toast.makeText(UpdateItemContent.this, "更新成功", Toast.LENGTH_SHORT).show());
+
+                Intent intent = new Intent(UpdateItemContent.this,UpdateItemContent.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+
 
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -135,11 +140,17 @@ public class UpdateItemContent extends AppCompatActivity {
                 runOnUiThread(() -> Toast.makeText(UpdateItemContent.this, "更新失敗", Toast.LENGTH_SHORT).show());
             }
         }).start();
+
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            startActivity(new Intent(UpdateItemContent.this, DataViewActivity.class));
+
+            if(fromdataview_int==11){
+                DataViewActivity.upLoad(this);
+                fromdataview_int=0;
+            }
+
             finish();
             return true;
         }

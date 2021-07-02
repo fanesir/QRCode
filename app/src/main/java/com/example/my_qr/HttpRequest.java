@@ -24,7 +24,7 @@ import okhttp3.Response;
 
 public class HttpRequest {
     public static final String PROTOCOL = "http";
-    public static final String HOST = "192.168.1.8";
+    public static final String HOST = "140.128.75.190";// "1"http://140.128.75.190:4000/
     public static final int PORT = 4000;
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     protected static HttpRequest httpRequest;
@@ -438,9 +438,10 @@ public class HttpRequest {
         }
     }
 
-    class BorrowRecord extends JsonData implements Serializable {
+    static class BorrowRecord extends JsonData implements Serializable {
         protected int id;
         protected String borrow_date;
+        protected String reply_date;
         protected String note;
         protected int item_id;
         protected int borrower_id;
@@ -451,6 +452,7 @@ public class HttpRequest {
             this.item_id = this.mustGet("item_id");//Brrow item
             this.borrower_id = this.mustGet("borrower_id");
             this.borrow_date = this.mustGet("borrow_date");
+            this.reply_date = this.mustGet("reply_date");
             this.note = this.mustGet("note");
 
         }

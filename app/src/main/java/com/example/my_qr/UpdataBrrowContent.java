@@ -18,6 +18,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +31,9 @@ public class UpdataBrrowContent extends AppCompatActivity {
     AlertDialog alertDialog;
     AlertDialog.Builder alertdialog;
     HttpRequest.ItemInfo getrecord_item_id;
-    String brrowname,brrowphone;
+    HttpRequest.BorrowRecord borrowRecord;
+    String brrowname, brrowphone;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +49,16 @@ public class UpdataBrrowContent extends AppCompatActivity {
 
         getrecord_item_id = (HttpRequest.ItemInfo) intent.getSerializableExtra("BrrowRecord_item_id");
         borrowerInfo = (HttpRequest.BorrowerInfo) intent.getSerializableExtra("BrrowInfo");
+        borrowRecord = (HttpRequest.BorrowRecord) intent.getSerializableExtra("getBorrowerRecordInfo");
+
         brrowname = borrowerInfo.name;
-        brrowphone=borrowerInfo.phone_number;
+        brrowphone = borrowerInfo.phone_number;
+
+        TextView borrow_dateText = findViewById(R.id.borrow_dateText);
+        TextView reply_datxt = findViewById(R.id.reply_dateText);
+
+        borrow_dateText.setText(borrowRecord.borrow_date.substring(0, 10)+"");
+        reply_datxt.setText(borrowRecord.reply_date.substring(0, 10)+"");
 
         new Thread(() -> {
             try {
@@ -62,7 +73,7 @@ public class UpdataBrrowContent extends AppCompatActivity {
             }
         }).start();
 
-        brrownameid.setText(borrowerInfo.name + "");
+        brrownameid.setText(borrowerInfo.name + "   " + borrowRecord.id + "");
 
 
         cardView.setOnClickListener(view -> {
@@ -75,7 +86,7 @@ public class UpdataBrrowContent extends AppCompatActivity {
             EditText edaccountphone = (EditText) dialogView.findViewById(R.id.edaccountphone);
             Button buttonchangeaccount = (Button) dialogView.findViewById(R.id.buttonchangeaccount);
 
-            editTextname.setText(brrowname+ "");
+            editTextname.setText(brrowname + "");
             edaccountphone.setText(brrowphone + "");
 
             alertDialog = alertdialog.create();
@@ -86,10 +97,10 @@ public class UpdataBrrowContent extends AppCompatActivity {
                 String phone = edaccountphone.getText().toString();
                 int id = borrowerInfo.id;
 
-                if (name.equals("")){
+                if (name.equals("")) {
                     editTextname.setError("姓名不可空白");
                     return;
-                }else if (phone.equals("")) {
+                } else if (phone.equals("")) {
                     edaccountphone.setError("電話不可空白");
                     return;
                 }
@@ -106,18 +117,22 @@ public class UpdataBrrowContent extends AppCompatActivity {
                     }
                 }).start();
 
-                brrowname=name;
-                brrowphone=phone;
+                brrowname = name;
+                brrowphone = phone;
 
                 brrownameid.setText(name + "");
                 alertDialog.cancel();
             });
 
         });
-
         cardViewbrrowitem.setOnClickListener(view -> {
 
+            Intent intent1 = new Intent(UpdataBrrowContent.this, UpdateItemContent.class);
+            intent1.putExtra("item_info", getrecord_item_id.item_id);//
+            UpdateItemContent.fromdataview_int = 0;
+            startActivity(intent1);
         });
+
     }
 
 
@@ -125,6 +140,7 @@ public class UpdataBrrowContent extends AppCompatActivity {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             startActivity(new Intent(UpdataBrrowContent.this, ListBorrowerActivity.class));
             finish();
+
             return true;
         }
         return super.onKeyDown(keyCode, event);

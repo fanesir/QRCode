@@ -1,10 +1,11 @@
 package com.example.my_qr;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.my_qr.ExtentBaseAdpter.LoadData;
 import com.google.android.material.navigation.NavigationView;
@@ -26,7 +26,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -40,7 +39,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     EditText searchField;
     MenuItem getAllItem, menuItemInventory, menuItemNoInventory, discard, fixIng, unlabel;
     Boolean correctboolean;
-
+    private static Context mContext;
 
     LoadData<HttpRequest.ItemInfo> loadItem = new LoadData<HttpRequest.ItemInfo>() {
         @Override
@@ -71,6 +70,8 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     };
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +81,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         searchField = findViewById(R.id.item_search_field);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener((MenuItem menuItem) -> {
             int id = menuItem.getItemId();
             if (id == R.id.itemcamera) {
@@ -97,8 +99,6 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
                 Intent intent = new Intent(DataViewActivity.this, CameraGetItemId.class);
                 startActivity(intent);
             }
-
-
 
             return false;
         });
@@ -181,16 +181,23 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             HttpRequest.ItemInfo info = (HttpRequest.ItemInfo) itemAdapter.getItem(i);//第幾個並把資料帶過去
 
             Intent intent = new Intent(DataViewActivity.this, UpdateItemContent.class);
-            intent.putExtra("item_info", info.item_id);//
+            intent.putExtra("item_info", info.item_id);
+            UpdateItemContent.fromdataview_int=11;
             startActivity(intent);
-            finish();
         });
 
         findViewById(R.id.sideBarButton).setOnClickListener(this::openSideBar);
+
     }
+
+      static void upLoad(Context context){
+          Intent intent = new Intent(context, DataViewActivity.class);
+          context.startActivity(intent);
+     }
 
     void clearAndReloadItems() {
         lv.setAdapter(new ItemAdapter(this, loadItem));//當有條件搜尋時就會刷新的物件進去
+
     }
 
     public void select(HttpRequest.ItemState searchState, Boolean correct, Boolean discard, Boolean fixIng, Boolean unlabel) {
@@ -224,6 +231,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             ad.setMessage("離開程式?");
             ad.setPositiveButton("是", (DialogInterface dialogInterface, int i) -> {
                 System.exit(0); // 離開程式
+
             }).show();
 
             return true;
@@ -274,4 +282,6 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
             return view;
         }
     }
+
+
 }

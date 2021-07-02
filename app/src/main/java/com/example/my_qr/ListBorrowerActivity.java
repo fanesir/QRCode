@@ -3,14 +3,12 @@ package com.example.my_qr;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 
@@ -24,9 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ListBorrowerActivity extends AppCompatActivity {
     ListView lvBorrowerAccount;
-    HttpRequest.BorrowRecord getBorrowerInfo;
     SwipyRefreshLayout swipyRefreshLayout;
-
 
     Map<Integer, HttpRequest.BorrowerInfo> borrowerInfoMap = new HashMap<>();
     Map<Integer, HttpRequest.ItemInfo> itemInfoMap = new HashMap<>();
@@ -74,14 +70,18 @@ public class ListBorrowerActivity extends AppCompatActivity {
         lvBorrowerAccount.setOnItemClickListener((adapterView, view, i, l) -> {//短按顯示此借出人借過的物品
             BorrowerInfoItemAdpter borrowerListAdapter = (BorrowerInfoItemAdpter) adapterView.getAdapter();//getAdapter 方法
 
+
             HttpRequest.BorrowRecord getBorrowerInfo = (HttpRequest.BorrowRecord) borrowerListAdapter.getItem(i);
 
-            HttpRequest.BorrowerInfo itemInfo2 = borrowerInfoMap.get(getBorrowerInfo.borrower_id);
+            HttpRequest.BorrowerInfo brrowinfo = borrowerInfoMap.get(getBorrowerInfo.borrower_id);
             HttpRequest.ItemInfo itemInfo = itemInfoMap.get(getBorrowerInfo.item_id);//給予借出者的項目ID
 
             Intent intent  = new Intent(ListBorrowerActivity.this,UpdataBrrowContent.class);
-            intent.putExtra("BrrowInfo", itemInfo2);
+
+            intent.putExtra("BrrowInfo", brrowinfo);
             intent.putExtra("BrrowRecord_item_id",itemInfo);
+            intent.putExtra("getBorrowerRecordInfo",getBorrowerInfo);
+
             startActivity(intent);
             finish();
         });
@@ -122,7 +122,8 @@ public class ListBorrowerActivity extends AppCompatActivity {
 
             item_name.setText(itemInfo.name);
             item_local.setText(itemInfo2.name + "");
-            item_id.setText(info.borrow_date.substring(0, 10) + "");
+            item_id.setText(info.borrow_date.substring(0, 10));
+
 
             return view;
         }
