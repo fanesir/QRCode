@@ -60,6 +60,7 @@ public class UpdateItemContent extends AppCompatActivity {
                         unlabel.setChecked(info.unlabel);
                         itemitemrextview.setText("物品名稱:   " + info.name + "\n" + "存放地點:   " + info.location + "\n" +
                                 "物品ID:       " + info.item_id + "\n" + "物品備註:   " + info.note);
+
                     }
                 });
             } catch (IOException e) {
@@ -114,6 +115,7 @@ public class UpdateItemContent extends AppCompatActivity {
                 }).start();
             });
         });
+
     }
 
 

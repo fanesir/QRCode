@@ -438,13 +438,14 @@ public class HttpRequest {
         }
     }
 
-    static class BorrowRecord extends JsonData implements Serializable {
+     static class BorrowRecord extends JsonData implements Serializable {
         protected int id;
         protected String borrow_date;
         protected String reply_date;
         protected String note;
         protected int item_id;
         protected int borrower_id;
+
         BorrowRecord(JSONObject object) throws JSONException {
             super(object);
 
@@ -454,6 +455,7 @@ public class HttpRequest {
             this.borrow_date = this.mustGet("borrow_date");
             this.reply_date = this.mustGet("reply_date");
             this.note = this.mustGet("note");
+           // this.returned=this.mustGet("returned");
 
         }
     }

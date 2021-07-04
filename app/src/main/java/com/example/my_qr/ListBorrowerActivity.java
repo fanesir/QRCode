@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
@@ -76,11 +78,11 @@ public class ListBorrowerActivity extends AppCompatActivity {
             HttpRequest.BorrowerInfo brrowinfo = borrowerInfoMap.get(getBorrowerInfo.borrower_id);
             HttpRequest.ItemInfo itemInfo = itemInfoMap.get(getBorrowerInfo.item_id);//給予借出者的項目ID
 
-            Intent intent  = new Intent(ListBorrowerActivity.this,UpdataBrrowContent.class);
+            Intent intent = new Intent(ListBorrowerActivity.this, UpdataBrrowContent.class);
 
             intent.putExtra("BrrowInfo", brrowinfo);
-            intent.putExtra("BrrowRecord_item_id",itemInfo);
-            intent.putExtra("getBorrowerRecordInfo",getBorrowerInfo);
+            intent.putExtra("BrrowRecord_item_id", itemInfo);
+            intent.putExtra("getBorrowerRecordInfo", getBorrowerInfo);
 
             startActivity(intent);
             finish();
@@ -111,18 +113,39 @@ public class ListBorrowerActivity extends AppCompatActivity {
                 this.loadItems();
             }
             HttpRequest.BorrowRecord info = (HttpRequest.BorrowRecord) this.getItem(i);
+            HttpRequest.ItemInfo itemInfo = itemInfoMap.get(info.item_id);
 
             TextView item_name = view.findViewById(R.id.infobrrow);
             TextView item_local = view.findViewById(R.id.namebrrow);
             TextView item_id = view.findViewById(R.id.idbrrow);
-
-            HttpRequest.ItemInfo itemInfo = itemInfoMap.get(info.item_id);
+            CheckBox checkBox = view.findViewById(R.id.checkBoxdata);
             HttpRequest.BorrowerInfo itemInfo2 = borrowerInfoMap.get(info.borrower_id);
-
-
-            item_name.setText(itemInfo.name);
+            item_name.setText(itemInfo.name + " ");
             item_local.setText(itemInfo2.name + "");
             item_id.setText(info.borrow_date.substring(0, 10));
+
+            if (info.reply_date != null) {
+                checkBox.setChecked(true);
+            } else if(info.reply_date ==null) {
+                checkBox.setChecked(false);
+            }
+
+
+            checkBox.setOnClickListener(v -> new Thread(() -> {
+                try {
+                    HttpRequest.getInstance().CreateThisAccountBorrowerItem(info.id, info.borrow_date, null, info.note, itemInfo.id);
+                    runOnUiThread(() -> {
+                        Toast.makeText(ListBorrowerActivity.this, R.string.sign_up_success, Toast.LENGTH_SHORT).show();
+                    });
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                } catch (HttpRequest.SignUpError signUpError) {
+                    signUpError.printStackTrace();
+                    runOnUiThread(() -> {
+                        Toast.makeText(ListBorrowerActivity.this, "fail", Toast.LENGTH_LONG).show();
+                    });
+                }
+            }).start());
 
 
             return view;

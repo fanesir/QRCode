@@ -27,7 +27,7 @@
         android:text="TextView"
         android:textColor="#100202"
         android:textSize="17sp"
-        app:layout_constraintStart_toEndOf="@+id/checkBox4"
+        app:layout_constraintStart_toEndOf="@+id/checkBoxdata"
         app:layout_constraintTop_toBottomOf="@+id/item_name"
         tools:ignore="UnknownIdInLayout" />
 
@@ -37,11 +37,11 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@+id/checkBox4"
+        app:layout_constraintStart_toEndOf="@+id/checkBoxdata"
         app:layout_constraintTop_toBottomOf="@+id/infobrrow" />
 
     <CheckBox
-        android:id="@+id/checkBox4"
+        android:id="@+id/checkBoxdata"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
