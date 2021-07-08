@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -124,6 +125,7 @@ public class HttpRequest {
                 .build();
         return client.newCall(request).execute();
     }
+
 
     private RequestBody MakeJson(JSONObject jsonObject) {
         return RequestBody.create(jsonObject.toString(), JSON);
@@ -262,6 +264,23 @@ public class HttpRequest {
             throw new SignUpError();
         }
     }
+
+    public void ThisAccountBorrowerItemUpreturned(int id,Boolean returned ) throws JSONException, IOException, SignUpError {
+
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("returned", returned);//
+
+
+        RequestBody body = this.MakeJson(object);
+        Response response = this.Put("/api/borrow_record", body);
+        if (response.code() != 200) {
+            Log.d("HttpError", response.body().string()+response.code()+"");
+            throw new SignUpError();
+        }
+    }
+
+
 
     public BorrowerInfo GetBorrower(int id) throws IOException, JSONException {
         Response response = this.Get("/api/borrower", new String[][]{
@@ -440,7 +459,7 @@ public class HttpRequest {
 
      static class BorrowRecord extends JsonData implements Serializable {
         protected int id;
-        protected String borrow_date;
+        protected String borrow_date ;
         protected String reply_date;
         protected String note;
         protected int item_id;
@@ -453,9 +472,15 @@ public class HttpRequest {
             this.item_id = this.mustGet("item_id");//Brrow item
             this.borrower_id = this.mustGet("borrower_id");
             this.borrow_date = this.mustGet("borrow_date");
-            this.reply_date = this.mustGet("reply_date");
             this.note = this.mustGet("note");
-           // this.returned=this.mustGet("returned");
+            this.reply_date = this.mustGet("reply_date")+"";
+
+
+
+
+
+
+
 
         }
     }

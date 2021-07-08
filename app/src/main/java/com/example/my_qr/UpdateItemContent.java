@@ -122,7 +122,6 @@ public class UpdateItemContent extends AppCompatActivity {
     public void updateItemState(View view) {
         new Thread(() -> {
             try {
-                //runOnUiThread(() -> submitButton.setVisibility(View.VISIBLE));
                 HttpRequest.ItemState state = new HttpRequest.ItemState();//會確認說哪邊有按到哪邊沒有
                 state.correct = correct.isChecked();//檢查哪邊有按到
                 state.fixing = fixing.isChecked();
@@ -149,10 +148,9 @@ public class UpdateItemContent extends AppCompatActivity {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
 
             if(fromdataview_int==11){
-                DataViewActivity.upLoad(this);
+                DataViewActivity.upLoad(UpdateItemContent.this);
                 fromdataview_int=0;
             }
-
             finish();
             return true;
         }

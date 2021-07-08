@@ -1,5 +1,6 @@
 package com.example.my_qr;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,40 +26,32 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 public class UpdataBrrowContent extends AppCompatActivity {
-    TextView brrownameid, brrowitedid;
-    CardView cardView, cardViewbrrowitem;
-    HttpRequest.BorrowerInfo borrowerInfo;
-    AlertDialog alertDialog;
-    AlertDialog.Builder alertdialog;
-    HttpRequest.ItemInfo getrecord_item_id;
-    HttpRequest.BorrowRecord borrowRecord;
+    TextView   borrow_dateText, reply_datxt;
     String brrowname, brrowphone;
-
-
+    HttpRequest.BorrowRecord   borrowRecord;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_updata_brrow_content);
 
-        brrownameid = findViewById(R.id.brrownameid);
-        brrowitedid = findViewById(R.id.brrowitedid);
-        cardViewbrrowitem = findViewById(R.id.cardvidwednamebrrowitem);
-        cardView = findViewById(R.id.cardvidwedname);
+        TextView brrownameid = findViewById(R.id.brrownameid);
+        TextView brrowitedid = findViewById(R.id.brrowitedid);
+        CardView cardViewbrrowitem = findViewById(R.id.cardvidwednamebrrowitem);
+        CardView cardView = findViewById(R.id.cardvidwedname);
 
         Intent intent = UpdataBrrowContent.this.getIntent();
 
-        getrecord_item_id = (HttpRequest.ItemInfo) intent.getSerializableExtra("BrrowRecord_item_id");
-        borrowerInfo = (HttpRequest.BorrowerInfo) intent.getSerializableExtra("BrrowInfo");
+        HttpRequest.ItemInfo getrecord_item_id = (HttpRequest.ItemInfo) intent.getSerializableExtra("BrrowRecord_item_id");
+        HttpRequest.BorrowerInfo borrowerInfo = (HttpRequest.BorrowerInfo) intent.getSerializableExtra("BrrowInfo");
         borrowRecord = (HttpRequest.BorrowRecord) intent.getSerializableExtra("getBorrowerRecordInfo");
 
-        brrowname = borrowerInfo.name;
-        brrowphone = borrowerInfo.phone_number;
+         brrowname = borrowerInfo.name;
+         brrowphone = borrowerInfo.phone_number;
 
-        TextView borrow_dateText = findViewById(R.id.borrow_dateText);
-        TextView reply_datxt = findViewById(R.id.reply_dateText);
+        borrow_dateText = findViewById(R.id.borrow_dateText);
+        reply_datxt = findViewById(R.id.reply_dateText);
 
-        borrow_dateText.setText(borrowRecord.borrow_date.substring(0, 10)+"");
-        reply_datxt.setText(borrowRecord.reply_date.substring(0, 10)+"");
+        showThisBrrowInfo();
 
         new Thread(() -> {
             try {
@@ -77,7 +70,7 @@ public class UpdataBrrowContent extends AppCompatActivity {
 
 
         cardView.setOnClickListener(view -> {
-            alertdialog = new AlertDialog.Builder(UpdataBrrowContent.this);
+            AlertDialog.Builder alertdialog = new AlertDialog.Builder(UpdataBrrowContent.this);
             LayoutInflater inflater = getLayoutInflater();//create layout
             View dialogView = inflater.inflate(R.layout.brrow_change_data_layout, null);//input for View
             alertdialog.setView(dialogView);
@@ -89,8 +82,9 @@ public class UpdataBrrowContent extends AppCompatActivity {
             editTextname.setText(brrowname + "");
             edaccountphone.setText(brrowphone + "");
 
-            alertDialog = alertdialog.create();
+            AlertDialog alertDialog = alertdialog.create();
             alertDialog.show();
+
 
             buttonchangeaccount.setOnClickListener(view1 -> {
                 String name = editTextname.getText().toString();
@@ -106,6 +100,7 @@ public class UpdataBrrowContent extends AppCompatActivity {
                 }
 
                 new Thread(() -> {
+
                     try {
                         HttpRequest.getInstance().UpdateBorrower(name, phone, id);
                         runOnUiThread(() -> Toast.makeText(UpdataBrrowContent.this, "更新借出人成功", Toast.LENGTH_LONG).show());
@@ -135,15 +130,29 @@ public class UpdataBrrowContent extends AppCompatActivity {
 
     }
 
+    public void showThisBrrowInfo() {
+        new Thread(() -> {
+            try {
+                HttpRequest.BorrowRecord info = HttpRequest.getInstance().GetBorrowerRecord(borrowRecord.id);
+                runOnUiThread(() -> {
+                    borrow_dateText.setText(info.borrow_date.substring(0, 10) + "");
+                    reply_datxt.setText(info.reply_date + "");
+                });
+
+            } catch (IOException | JSONException | HttpRequest.GetDataError e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {//捕捉返回鍵
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             startActivity(new Intent(UpdataBrrowContent.this, ListBorrowerActivity.class));
             finish();
-
             return true;
         }
         return super.onKeyDown(keyCode, event);
+
     }
 
 

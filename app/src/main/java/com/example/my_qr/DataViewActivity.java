@@ -39,7 +39,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     EditText searchField;
     MenuItem getAllItem, menuItemInventory, menuItemNoInventory, discard, fixIng, unlabel;
     Boolean correctboolean;
-    private static Context mContext;
+
 
     LoadData<HttpRequest.ItemInfo> loadItem = new LoadData<HttpRequest.ItemInfo>() {
         @Override

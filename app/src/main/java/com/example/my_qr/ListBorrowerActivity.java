@@ -1,8 +1,10 @@
 package com.example.my_qr;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ListBorrowerActivity extends AppCompatActivity {
     ListView lvBorrowerAccount;
     SwipyRefreshLayout swipyRefreshLayout;
+
 
     Map<Integer, HttpRequest.BorrowerInfo> borrowerInfoMap = new HashMap<>();
     Map<Integer, HttpRequest.ItemInfo> itemInfoMap = new HashMap<>();
@@ -115,42 +118,64 @@ public class ListBorrowerActivity extends AppCompatActivity {
             HttpRequest.BorrowRecord info = (HttpRequest.BorrowRecord) this.getItem(i);
             HttpRequest.ItemInfo itemInfo = itemInfoMap.get(info.item_id);
 
+            CheckBox checkBox = view.findViewById(R.id.checkBoxdata);
             TextView item_name = view.findViewById(R.id.infobrrow);
             TextView item_local = view.findViewById(R.id.namebrrow);
             TextView item_id = view.findViewById(R.id.idbrrow);
-            CheckBox checkBox = view.findViewById(R.id.checkBoxdata);
-            HttpRequest.BorrowerInfo itemInfo2 = borrowerInfoMap.get(info.borrower_id);
-            item_name.setText(itemInfo.name + " ");
-            item_local.setText(itemInfo2.name + "");
+
+            HttpRequest.BorrowerInfo borrowinfo = borrowerInfoMap.get(info.borrower_id);
+
+            item_name.setText(itemInfo.name + " " + info.id + "");
+            item_local.setText(borrowinfo.name + "");
             item_id.setText(info.borrow_date.substring(0, 10));
 
-            if (info.reply_date != null) {
-                checkBox.setChecked(true);
-            } else if(info.reply_date ==null) {
-                checkBox.setChecked(false);
-            }
+
+            checkBox.setChecked(!info.reply_date.equals("null"));
 
 
-            checkBox.setOnClickListener(v -> new Thread(() -> {
-                try {
-                    HttpRequest.getInstance().CreateThisAccountBorrowerItem(info.id, info.borrow_date, null, info.note, itemInfo.id);
-                    runOnUiThread(() -> {
-                        Toast.makeText(ListBorrowerActivity.this, R.string.sign_up_success, Toast.LENGTH_SHORT).show();
-                    });
-                } catch (JSONException | IOException e) {
-                    e.printStackTrace();
-                } catch (HttpRequest.SignUpError signUpError) {
-                    signUpError.printStackTrace();
-                    runOnUiThread(() -> {
-                        Toast.makeText(ListBorrowerActivity.this, "fail", Toast.LENGTH_LONG).show();
-                    });
+            checkBox.setOnClickListener(view1 -> {
+                if (checkBox.isChecked()) {
+                    new Thread(() -> {
+                        try {
+                            HttpRequest.getInstance().ThisAccountBorrowerItemUpreturned(info.id, true);
+
+                            runOnUiThread(() -> {
+                                Toast.makeText(ListBorrowerActivity.this, borrowinfo.name + "已還", Toast.LENGTH_SHORT).show();
+                            });
+                        } catch (JSONException | IOException e) {
+                            e.printStackTrace();
+                        } catch (HttpRequest.SignUpError signUpError) {
+                            signUpError.printStackTrace();
+                            runOnUiThread(() -> {
+                                Toast.makeText(ListBorrowerActivity.this, "fail", Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    }).start();
+
+
+                } else {
+                    new Thread(() -> {
+                        try {
+                            HttpRequest.getInstance().ThisAccountBorrowerItemUpreturned(info.id, false);
+                            runOnUiThread(() -> {
+                                Toast.makeText(ListBorrowerActivity.this, borrowinfo.name + "未還", Toast.LENGTH_SHORT).show();
+                            });
+                        } catch (JSONException | IOException e) {
+                            e.printStackTrace();
+                        } catch (HttpRequest.SignUpError signUpError) {
+                            signUpError.printStackTrace();
+                            runOnUiThread(() -> {
+                                Toast.makeText(ListBorrowerActivity.this, "fail", Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    }).start();
                 }
-            }).start());
-
+            });
 
             return view;
         }
     }
+
 
 
 }

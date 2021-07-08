@@ -11,4 +11,5 @@
     <string name="your_name">你的名稱</string>
     <string name="account_required">輸入帳號</string>
     <string name="password_required">輸入密碼</string>
+
 </resources>
