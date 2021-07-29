@@ -37,7 +37,7 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     ListView lv;
     HttpRequest.ItemState searchState;
     EditText searchField;
-    MenuItem getAllItem, menuItemInventory, menuItemNoInventory, discard, fixIng, unlabel;
+    private MenuItem getAllItem, menuItemInventory, menuItemNoInventory, discard, fixIng, unlabel;
     Boolean correctboolean;
 
 
@@ -45,8 +45,8 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
         @Override
         public ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> load(int offset) {
             try {
-                ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
-                state.result = HttpRequest.getInstance().GetItem(20, offset, searchState);
+                ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();//每次都會new 類別放置進去
+                state.result = HttpRequest.getInstance().GetItem(20, offset, searchState);//內部load放置資料
                 state.has_next = true;
                 return state;
             } catch (IOException | JSONException | HttpRequest.GetDataError e) {//InterruptedException
@@ -57,16 +57,20 @@ public class DataViewActivity extends AppCompatActivity { //登入成功的地�
     };
 
 
-    LoadData<HttpRequest.ItemInfo> searchName = (int offset) -> {
-        try {
-            ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
-            state.result = HttpRequest.getInstance().SearchItem(DataViewActivity.this.searchField.getText().toString());
-            state.has_next = false;
-            return state;
-        } catch (IOException | JSONException | HttpRequest.GetDataError e) {//InterruptedException
-            e.printStackTrace();
+    LoadData<HttpRequest.ItemInfo> searchName = new LoadData<HttpRequest.ItemInfo>() {
+        @Override
+        public ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> load(int offset) {
+            try {
+                ExtentBaseAdpter.LoadState<HttpRequest.ItemInfo> state = new ExtentBaseAdpter.LoadState<>();
+                state.result = HttpRequest.getInstance().SearchItem(DataViewActivity.this.searchField.getText().toString());
+                state.has_next = false;
+
+                return state;
+            } catch (IOException | JSONException | HttpRequest.GetDataError e) {//InterruptedException
+                e.printStackTrace();
+            }
+            return null;
         }
-        return null;
     };
 
 

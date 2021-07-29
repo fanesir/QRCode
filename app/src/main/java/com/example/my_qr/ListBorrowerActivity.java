@@ -125,7 +125,7 @@ public class ListBorrowerActivity extends AppCompatActivity {
 
             HttpRequest.BorrowerInfo borrowinfo = borrowerInfoMap.get(info.borrower_id);
 
-            item_name.setText(itemInfo.name + " " + info.id + "");
+            item_name.setText(itemInfo.name+""+itemInfo.id+"");
             item_local.setText(borrowinfo.name + "");
             item_id.setText(info.borrow_date.substring(0, 10));
 

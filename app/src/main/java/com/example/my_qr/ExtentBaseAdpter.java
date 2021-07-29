@@ -16,7 +16,8 @@ public abstract class ExtentBaseAdpter<T> extends BaseAdapter implements Seriali
     private boolean lock = false;
     protected LoadData<T> callback;
 
-    interface LoadData<T> {
+
+  interface LoadData<T> {
         LoadState<T> load(int offset);
     }
 

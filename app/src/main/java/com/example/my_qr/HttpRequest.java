@@ -351,6 +351,29 @@ public class HttpRequest {
         return array;
     }
 
+    public List<BorrowRecord> ItemidListview(int limit ,int offset,int item_id) throws IOException, JSONException, GetDataError {
+        String[][] query = new String[][]{
+                {"limit", Integer.toString(limit)},
+                {"offset", Integer.toString((offset))},
+                {"item_id", Integer.toString(item_id)}
+
+        };
+
+        Response response = this.Get("/api/borrow_record", query);
+        if (response.code() != 200) {
+            Log.d("HttpError", response.body().string());
+            throw new GetDataError();
+        }
+        JSONArray result = new JSONArray(response.body().string());
+        List<BorrowRecord> array = new LinkedList<>();
+        for (int i = 0; i < result.length(); ++i) {
+            JSONObject data = (JSONObject) result.get(i);
+            array.add(new BorrowRecord(data));
+        }
+        return array;
+    }
+
+
     public void UpdateBorrower(String name, String phone_number, int BorrowedItemID) throws IOException, JSONException, UpdateDataError {
 
         JSONObject body = new JSONObject();
@@ -474,12 +497,6 @@ public class HttpRequest {
             this.borrow_date = this.mustGet("borrow_date");
             this.note = this.mustGet("note");
             this.reply_date = this.mustGet("reply_date")+"";
-
-
-
-
-
-
 
 
         }
